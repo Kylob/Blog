@@ -1,0 +1,37 @@
+{
+    "name": "bootpress/blog",
+    "description": "A file based blog that can be implemented in any project.  Includes full-text searching, featured and similar posts, pages, listings, archives, authors, tags, categories, sitemaps and feeds.  No admin necessary.",
+    "keywords": ["bootpress", "blog", "flat-file", "cms", "twig", "markdown"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kyle Gadd",
+            "email": "kyle.gadd@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "bootpress/page": "^1.0",
+        "bootpress/asset": "^1.0",
+        "bootpress/sqlite": "^1.0",
+        "bootpress/sitemap": "^1.0",
+        "bootpress/hierarchy": "^1.0",
+        "bootpress/pagination": "^1.0",
+        "symfony/var-dumper": "^2.3||^3.0",
+        "symfony/finder": "^2.3||^3.0",
+        "symfony/yaml": "^2.3||^3.0",
+        "league/commonmark": "~0.7",
+        "jbroadway/urlify": "^1.0",
+        "spartz/text-formatter": "^1.0", 
+        "aptoma/twig-markdown": "^2.0",
+        "twig/twig": "^1.18"
+    },
+    "require-dev": {
+        "bootpress/htmlunit": "^1.0",
+        "friendsofphp/php-cs-fixer": "^1.0",
+        "squizlabs/php_codesniffer": "^2.5"
+    },
+    "autoload": {
+        "psr-4": { "BootPress\\Blog\\": "src" }
+    }
+}
