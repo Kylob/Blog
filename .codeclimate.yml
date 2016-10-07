@@ -7,13 +7,15 @@ engines:
         checks:
             Generic Files LineLength TooLong:
                 enabled: false
+            Generic Formatting DisallowMultipleStatements SameLine:
+                enabled: false
             Squiz WhiteSpace SuperfluousWhitespace EndLine:
+                enabled: false
+            Squiz WhiteSpace ScopeClosingBrace ContentBefore:
                 enabled: false
             PSR2 ControlStructures SwitchDeclaration BodyOnNextLineCASE:
                 enabled: false
             PSR2 ControlStructures SwitchDeclaration BreakNotNewLine:
-                enabled: false
-            Generic Formatting DisallowMultipleStatements SameLine:
                 enabled: false
             PSR2 ControlStructures SwitchDeclaration BodyOnNextLineDEFAULT:
                 enabled: false
