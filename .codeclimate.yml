@@ -9,6 +9,14 @@ engines:
                 enabled: false
             Squiz WhiteSpace SuperfluousWhitespace EndLine:
                 enabled: false
+            PSR2 ControlStructures SwitchDeclaration BodyOnNextLineCASE:
+                enabled: false
+            PSR2 ControlStructures SwitchDeclaration BreakNotNewLine:
+                enabled: false
+            Generic Formatting DisallowMultipleStatements SameLine:
+                enabled: false
+            PSR2 ControlStructures SwitchDeclaration BodyOnNextLineDEFAULT:
+                enabled: false
     phpmd:
         enabled: true
         config:
