@@ -94,7 +94,7 @@ blog:
     theme: default # The main theme for your site
 ```
 
-You can access any of these in your templates eg. ``{{ blog.name }}``.  Eventually this file will be full of authors, categories, and tags that you can easily manage as well .
+You can access any of these in your templates eg. ``{{ blog.name }}``.  Eventually this file will be full of authors, categories, and tags that you can easily manage as well.
 
 ## Create Content
 
