@@ -786,7 +786,6 @@ class Blog
                 'blog' => array(
                     'name' => 'Another { BootPress } Site',
                     'image' => '',
-                    'summary' => '',
                     'listings' => 'blog',
                     'breadcrumb' => 'Blog',
                     'theme' => 'default',

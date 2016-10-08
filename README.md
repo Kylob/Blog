@@ -8,7 +8,7 @@
 [![Code Climate][badge-code-climate]][link-code-climate]
 [![Test Coverage][badge-coverage]][link-coverage]
 
-A file based blog that can be implemented in any project.  Includes full-text searching, featured and similar posts, pages, listings, archives, authors, tags, categories, sitemaps and feeds.  No admin necessary.
+A file based blog that can be implemented in any project.  Includes featured, future, and similar posts, pages, listings, archives, authors, tags, categories, sitemaps, feeds, and full-text searching.  No admin necessary.
 
 ## Installation
 
@@ -87,14 +87,14 @@ Create a ``../page/blog/config.yml`` file with the following information:
 
 ```yaml
 blog:
-    name: Website # The name of your website
-    image: logo.png # A main image
+    name: Another { BootPress } Site # The name of your website
+    image: logo.png # The main image relative to this directory
     listings: blog # The url base for all your listing pages - authors, archives, tags, etc.
     breadcrumb: Blog # How to reference the listings in your breadcrumbs array
     theme: default # The main theme for your site
 ```
 
-You can access any of these in your templates eg. ``{{ blog.name }}``  Eventually this file will be full of authors, categories, and tags that you can easily manage as well .
+You can access any of these in your templates eg. ``{{ blog.name }}``.  Eventually this file will be full of authors, categories, and tags that you can easily manage as well .
 
 ## Create Content
 
