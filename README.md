@@ -48,6 +48,7 @@ Your ``index.php`` file should then look something like this:
 use BootPress\Page\Component as Page;
 use BootPress\Blog\Component as Blog;
 use BootPress\Asset\Component as Asset;
+use BootPress\Sitemap\Component as Sitemap;
 
 $autoloader = require '../vendor/autoload.php';
 
@@ -59,9 +60,11 @@ $page = Page::html(array(
 ));
 $html = '';
 
-// Deliver any assets first
+// Deliver sitemap and assets first
 if ($asset = Asset::cached('assets')) {
     $page->send($asset);
+} elseif ($xml = Sitemap::page()) {
+    $page->send($xml);
 }
 
 // Implement a blog
@@ -98,7 +101,7 @@ You can access any of these in your templates eg. ``{{ blog.name }}``.  Eventual
 
 ## Create Content
 
-A BootPress Blog is a flat-file CMS, which means you don't need any fancy admin interface to manage all of the content that is scattered througout a database.  You simply create files.  All of your blog's posts and pages will reside in the ``../page/blog/content`` directory, and if you look at a url, you will be able to follow the folders straight to your ``index.html.twig`` file. For example:
+A BootPress Blog is a flat-file CMS, which means you don't need any fancy admin interface to manage all of the content that is scattered througout a database.  You simply create files.  All of your blog's posts and pages will reside in the ``../page/blog/content/`` directory, and if you look at a url, you will be able to follow the folders straight to your ``index.html.twig`` file. For example:
 
 | URL                                   | File                                                         |
 | ------------------------------------- | ------------------------------------------------------------ |
@@ -108,18 +111,18 @@ A BootPress Blog is a flat-file CMS, which means you don't need any fancy admin 
 | /category/post.html                   | blog/content/category/post/index.html.twig                   |
 | /category/subcategory/long-title.html | blog/content/category/subcategory/long-title/index.html.twig |
 
-Why not have the 'about-me' file at 'content/about-me.html.twig' instead of 'content/about-me/index.html.twig' instead, right? This is so you can have all of the assets that you want to use, right there where you want to use them.  Linking to them is even easier.  Just put an image.jpg in the 'content/about-me' folder, and link to ``{{ 'image.jpg'|asset }}`` in the index.html.twig file. Would you like to resize that? ``{{ 'image.jpg?w=300'|asset }}`` To see all the options, check out the [Quick Reference "Glide"](http://glide.thephpleague.com/1.0/api/quick-reference/).
+Why not have the '**about-me**' file at '**content/about-me.html.twig**' instead of '**content/about-me/index.html.twig**' instead, right? This is so you can have all of the assets that you want to use, right there where you want to use them.  Linking to them is even easier.  Place an '**image.jpg**' in the '**content/about-me/**' folder, and link to ``{{ 'image.jpg'|asset }}`` in the '**index.html.twig**' file. Would you like to resize that?  Try an ``{{ 'image.jpg?w=300'|asset }}``. To see all the options, check out the [Quick Reference "Glide"](http://glide.thephpleague.com/1.0/api/quick-reference/).
 
 Non-HTML files are accessed according to the ``feed.rss`` URL example above.
 
 ## Twig Templates
 
-Every ``index.html.twig`` file is a Twig template that we pass the BootPress Page Component to so that you can interact with your HTML Page.  The methods available to you are:
+Every ``index.html.twig`` file is a Twig template that we pass the [BootPress Page Component](https://packagist.org/packages/bootpress/page) to so that you can interact with your HTML Page.  The methods available to you are:
 
 - ``{{ page.set() }}`` - Set HTML Page properties.  Things like the title, keywords (tags), author, etc.
 - ``{{ page.url() }} `` - Either create a url, or manipulate it's query string and fragment.
 - ``{{ page.get() }} `` - Access $_GET parameters.
-- ``{{ page.post() }} `` - Access $_POST parameters.
+- ``{{ page.post() }}`` - Access $_POST parameters.
 - ``{{ page.tag() }} `` - Generate an HTML tag programatically.
 - ``{{ page.meta() }} `` - Insert ``<meta>`` tag(s) into the ``<head>`` section of your page.
 - ``{{ page.link() }} `` - Include js, css, ico, etc links in your page.
@@ -175,19 +178,19 @@ Aren't they ***beautiful***?
 {% endmarkdown %}
 ```
 
-When you check ``if ($template = $blog->page()) { ... }`` we look for the Twig content file, and if it is there, we return a ``$template`` array with:
+When you check ``if ($template = $blog->page()) { ... }`` we will look for the corresponding Twig file, and if it is there, your ``$template`` will be an array with the following keys:
 
-- '**file**' - The appropriate Twig template that is equipped to deal with these 'type' of 'vars'.  If this is a 'txt', 'json', 'xml', 'rdf', 'rss', or 'atom' page then it will be empty.
+- '**file**' - The appropriate Twig template that is equipped to deal with these '**type**' of '**vars**'.  If this is a 'txt', 'json', 'xml', 'rdf', 'rss', or 'atom' page then it will be empty.
 - '**type**' - The kind of Blog page you are working with.  Either 'page', 'txt', 'json', 'xml', 'rdf', 'rss', 'atom', 'post', 'category', 'index', 'archives', 'authors', or 'tags'.
-- '**vars**' - Varies according to the 'type', but if the 'file' is empty, you can go ahead and ``$page->send(Asset::dispatch($template['type'], $template['vars']['content']));``.  We don't automatically send it for you, so that you can have the opportunity to log or cache the output before sending.
+- '**vars**' - Varies according to the '**type**', but if the '**file**' is empty, you can go ahead and ``$page->send(Asset::dispatch($template['type'], $template['vars']['content']));``.  We don't automatically send it for you, so that you can have the opportunity to log or cache the output before sending.
 
 At this point, you have your blog info, and you can do anything you want with it.  You can implement a BootPress Blog into any project.  It is as flexible as flexible can be, but if you like the way we do things so far, then let's continue shall we?
 
 ## Themes
 
-Themes live in your ``"../page/blog/themes/{$page->theme}"`` folder.  When you ``$html = $blog->theme->renderTwig($template)``, it will pass the ``$template['vars']`` to the ``"../page/blog/themes/{$page->theme}/{$template['file']}"`` to return your HTML.  Where a ``$template['file']`` does not exist, a default one will be provided for you.  If at any time you are wondering what vars you have to work with, then ``{{ dump() }}`` them, and they will be all spelled out for you.
+BootPress Themes live in your ``../page/blog/themes/`` folder, and assuming you have selected the '**default**', when you ``$html = $blog->theme->renderTwig($template)``, it will pass the ``$template['vars']`` to the ``$template['file']`` in the '**../page/blog/themes/default/**' folder and return your HTML.  If a ``$template['file']`` does not exist, a default one will be provided for you.  If at any time you are wondering what vars you have to work with, then ``{{ dump() }}`` them, and they will be all spelled out for you.
 
-When you ``$blog->theme->layout($html)``, it will pass the 'content' ($html) to your ``"../page/blog/themes/{$page->theme}/index.html.twig"`` file which could look something like this:
+When you ``$blog->theme->layout($html)``, it will pass the HTML ``{{ content }}`` to your ``"../page/blog/themes/default/index.html.twig"`` file which could look something like this:
 
 ```twig
 <!DOCTYPE html>
@@ -223,7 +226,7 @@ When you ``$blog->theme->layout($html)``, it will pass the 'content' ($html) to 
 
 ## Plugins
 
-Plugins are [Twig macros](http://twig.sensiolabs.org/doc/templates.html#macros) that reside in your ``blog/plugins`` folder, and are easily accessed in any template via ``{% import '@plugin/name' as name %}``.  My recommendation is to follow the packagist naming schema of 'vendor/package' with the main file being 'macro.twig'.  For example, if you put the following at ``../page/blog/plugins/kylob/mailto/macro.twig``:
+Plugins are [Twig macros](http://twig.sensiolabs.org/doc/templates.html#macros) that reside in your ``../page/blog/plugins/`` folder, and are easily accessed in any template via ``{% import '@plugin/name' as name %}``.  My recommendation is to follow the packagist naming schema of 'vendor/package' with the main file being 'macro.twig'.  For example, if you put the following at ``../page/blog/plugins/kylob/mailto/macro.twig``:
 
 ```twig
 {% macro eval(string) %}
