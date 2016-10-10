@@ -178,7 +178,7 @@ Aren't they ***beautiful***?
 {% endmarkdown %}
 ```
 
-When you check ``if ($template = $blog->page()) { ... }`` we will look for the corresponding URL Twig file, and if it is there, your ``$template`` will be an array with the following keys:
+When you check ``if ($template = $blog->page()) { ... }`` we will look for the corresponding URL Twig File, and if it is there, your ``$template`` will be an array with the following keys:
 
 - '**file**' - The appropriate Twig template that is equipped to deal with these '**type**' of '**vars**'.  If this is a 'txt', 'json', 'xml', 'rdf', 'rss', or 'atom' page then it will be empty.
 - '**type**' - The kind of Blog page you are working with.  Either 'page', 'txt', 'json', 'xml', 'rdf', 'rss', 'atom', 'post', 'category', 'index', 'archives', 'authors', or 'tags'.
