@@ -111,9 +111,9 @@ A BootPress Blog is a flat-file CMS, which means you don't need any fancy admin 
 | /category/post.html                   | blog/content/category/post/index.html.twig                   |
 | /category/subcategory/long-title.html | blog/content/category/subcategory/long-title/index.html.twig |
 
-Why not have the '**about-me.html**' URL file at '**content/about-me.html.twig**' instead of '**content/about-me/index.html.twig**' instead, right? This is so you can have all of the assets that you want to use, right there where you want to use them.  Linking to them is even easier.  Place an '**image.jpg**' in the '**content/about-me/**' folder, and link to ``{{ 'image.jpg'|asset }}`` in the '**index.html.twig**' file. Would you like to resize that?  Try an ``{{ 'image.jpg?w=300'|asset }}``. To see all the options, check out the [Quick Reference "Glide"](http://glide.thephpleague.com/1.0/api/quick-reference/).
+Why not have the '**/about-me.html**' URL file at '**content/about-me.html.twig**' instead of '**content/about-me/index.html.twig**' instead, right? This is so you can have all of the assets that you want to use, right there where you want to use them.  Linking to them is even easier.  Place an '**image.jpg**' in the '**content/about-me/**' folder, and link to ``{{ 'image.jpg'|asset }}`` in the '**index.html.twig**' file. Would you like to resize that?  Try an ``{{ 'image.jpg?w=300'|asset }}``. To see all the options, check out the [Quick Reference "Glide"](http://glide.thephpleague.com/1.0/api/quick-reference/).
 
-Non-HTML files are accessed according to the '**feed.rss**' URL example above.
+Non-HTML files are accessed according to the '**/feed.rss**' URL example above.
 
 ## Twig Templates
 
@@ -178,7 +178,7 @@ Aren't they ***beautiful***?
 {% endmarkdown %}
 ```
 
-When you check ``if ($template = $blog->page()) { ... }`` we will look for the corresponding Twig file, and if it is there, your ``$template`` will be an array with the following keys:
+When you check ``if ($template = $blog->page()) { ... }`` we will look for the corresponding URL Twig file, and if it is there, your ``$template`` will be an array with the following keys:
 
 - '**file**' - The appropriate Twig template that is equipped to deal with these '**type**' of '**vars**'.  If this is a 'txt', 'json', 'xml', 'rdf', 'rss', or 'atom' page then it will be empty.
 - '**type**' - The kind of Blog page you are working with.  Either 'page', 'txt', 'json', 'xml', 'rdf', 'rss', 'atom', 'post', 'category', 'index', 'archives', 'authors', or 'tags'.
