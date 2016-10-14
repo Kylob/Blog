@@ -97,7 +97,7 @@ blog:
     theme: default # The main theme for your site
 ```
 
-You can access any of these in your Twig templates eg. ``{{ blog.name }}``.  You can also get the ``{{ blog.page }}`` you are on, and get an array of ``{% set categories = blog.query('categories') %}`` or any other information you would like eg. 'tags', 'authors', 'archives', 'recent', 'featured', 'similar', 'posts', and '[]' - listings of every sort ie. "The Loop".  Eventually this file will be full of authors, categories, and tags that you can easily manage as well.
+You can access any of these in your Twig templates eg. ``{{ blog.name }}``.  You can also get the ``{{ blog.page }}`` you are on, and get an array of ``{% set categories = blog.query('categories') %}`` or any other information you would like eg. 'tags', 'authors', 'archives', 'recent', 'featured', 'similar', 'posts', and '[...]' - listings of every sort.  Otherwise known as "The Loop".  Eventually this file will be full of authors, categories, and tags that you can easily manage as well.
 
 ## Create Content
 
