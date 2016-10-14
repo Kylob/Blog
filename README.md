@@ -90,14 +90,14 @@ Create a ``../page/blog/config.yml`` file with the following information:
 
 ```yaml
 blog:
-    name: Another { BootPress } Site # The name of your website
+    name: Example # The name of your website
     image: logo.png # The main image relative to this directory
     listings: blog # The url base for all your listing pages - authors, archives, tags, etc.
     breadcrumb: Blog # How to reference the listings in your breadcrumbs array
     theme: default # The main theme for your site
 ```
 
-You can access any of these in your Twig templates eg. ``{{ blog.name }}``.  Eventually this file will be full of authors, categories, and tags that you can easily manage as well.
+You can access any of these in your Twig templates eg. ``{{ blog.name }}``.  You can also get the ``{{ blog.page }}`` you are on, and get an array of ``{% set categories = blog.query('categories') %}`` or any other information you would like eg. 'tags', 'authors', 'archives', 'recent', 'featured', 'similar', 'posts', and '[]' - listings of every sort ie. "The Loop".  Eventually this file will be full of authors, categories, and tags that you can easily manage as well.
 
 ## Create Content
 
