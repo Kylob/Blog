@@ -101,13 +101,13 @@ You can access any of these in your Twig templates eg. ``{{ blog.name }}``, incl
 
 ```twig
 <ul class="list-group">
-    {% for category in blog.query('categories') %}
-        <li class="list-group-item">
-            <span class="badge">{{ category.count }}</span>
-            <a href="{{ category.url }}">{{ category.name }}</a>
-            {# if category.subs #}
-        </li>
-    {% endfor %}
+{% for category in blog.query('categories') %}
+    <li class="list-group-item">
+        <span class="badge">{{ category.count }}</span>
+        <a href="{{ category.url }}">{{ category.name }}</a>
+        {# if category.subs #}
+    </li>
+{% endfor %}
 </ul>
 ```
 
