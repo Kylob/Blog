@@ -97,7 +97,21 @@ blog:
     theme: default # The main theme for your site
 ```
 
-You can access any of these in your Twig templates eg. ``{{ blog.name }}``, including the ``{{ blog.page }}`` you are on.  Eventually this file will be full of authors, categories, and tags that you can easily manage as well.  You can create a category links menu by ``{% set categories = blog.query('categories') %}``, and going through the array of information provided.  Other blog queries include '**tags**', '**authors**', '**archives**', '**recent**', '**featured**', '**similar**', '**posts**', and **[...]** listings of every sort, otherwise known as "The Loop".
+You can access any of these in your Twig templates eg. ``{{ blog.name }}``, including the ``{{ blog.page }}`` you are on.  Eventually this file will be full of authors, categories, and tags that you can easily manage as well.  You can create a [Bootstrap list group](http://getbootstrap.com/components/#list-group) of categories by:
+
+```twig
+<ul class="list-group">
+    {% for category in blog.query('categories') %}
+        <li class="list-group-item">
+            <span class="badge">{{ category.count }}</span>
+            <a href="{{ category.url }}">{{ category.name }}</a>
+            {# if category.subs #}
+        </li>
+    {% endfor %}
+</ul>
+```
+
+Other ``{{ blog.query(...) }}``'s include '**tags**', '**authors**', '**archives**', '**recent**', '**featured**', '**similar**', '**posts**', and **[...]** listings of every sort, otherwise known as "The Loop".
 
 ## Create Content
 
