@@ -3,11 +3,11 @@
 <channel>
 
     <title>{{ blog.name }}</title>
-    <link>{{ page.url('blog') }}</link>
+    <link>{{ page.url('blog/listings') }}</link>
     <description>{{ blog.summary }}</description>
     
     {{ pagination.set('page', 20) }}
-    {% for post in page.blog([], pagination) %}
+    {% for post in blog.query([], pagination) %}
         <item>
             <title>{{ post.title }}</title>
             <link>{{ post.url }}</link>

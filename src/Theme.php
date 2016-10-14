@@ -14,18 +14,32 @@ use Aptoma\Twig\Extension\MarkdownEngine\PHPLeagueCommonMarkEngine;
 
 class Theme
 {
+    /** @var array Twig template files and the specific vars passed to them. */
     public static $templates = array();
-    private $vars = array();
+
+    /** @var array Global vars that are included in every Twig template. */
+    public $vars = array();
+
+    /** @var object A BootPress\Blog\Blog instance. */
     private $blog;
-    private $page;
+
+    /** @var object A Twig_Environment instance. */
     private $twig;
+
+    /** @var array URL info relative to the current Twig template. */
     private $asset;
+
+    /** @var array Twig macro namespaced properties. */
     private $plugin;
 
     public function __construct(Blog $blog)
     {
         $this->blog = $blog;
-        $this->page = new \BootPress\Blog\Page();
+        $this->vars['blog'] = new \BootPress\Blog\Object($this->blog->config('blog'), array(
+            'query' => array($this->blog, 'query'),
+        ));
+        $this->vars['page'] = new \BootPress\Blog\Page();
+        $this->vars['pagination'] = new Pagination();
     }
 
     /**
@@ -53,8 +67,6 @@ class Theme
                 'auto_reload' => true,
                 'autoescape' => false,
             ), $options));
-            $this->twig->addGlobal('page', $this->page);
-            $this->twig->addGlobal('pagination', new Pagination());
             $this->twig->addExtension(new MarkdownExtension(new Markdown($this)));
             $this->twig->addFilter(new \Twig_SimpleFilter('asset', array($this, 'asset')));
             $this->twig->addFunction(new \Twig_SimpleFunction('this', array($this, 'this')));
@@ -354,9 +366,8 @@ class Theme
             'chars' => $page->url['chars'],
         );
         $template = substr($dir.$file, strlen($page->dir()));
-        $vars = array_merge($this->vars, $vars);
-        unset($vars['page']);
         self::$templates[] = array('template' => $template, 'vars' => $vars);
+        $vars = array_merge($vars, $this->vars);
         try {
             $html = $this->getTwig()->render($template, $vars);
         } catch (\Exception $e) {
@@ -364,40 +375,6 @@ class Theme
         }
 
         return $html;
-    }
-
-    /**
-     * Establishes global vars that will be accessible to all of your Twig templates.
-     *
-     * @param string|array $name  The vars variable.  You can make this an ``array($name => $value, ...)`` to set multiple vars at once.
-     * @param mixed        $value Of your vars $name if it is not an array.
-     */
-    public function globalVars($name, $value = null)
-    {
-        $vars = (is_array($name)) ? $name : array($name => $value);
-        foreach ($vars as $name => $value) {
-            if (is_array($value) && isset($this->vars[$name]) && is_array($this->vars[$name])) {
-                $this->vars[$name] = array_merge($this->vars[$name], $value);
-            } else {
-                $this->vars[$name] = $value;
-            }
-        }
-    }
-
-    /**
-     * Gives your Twig templates additional functionality via ``$page->$name(...)``.
-     *
-     * @param string   $name     To access the $function with.
-     * @param callable $function Does something.
-     *
-     * @throws LogicException If the $funcion is not callable.
-     */
-    public function addPageMethod($name, $function)
-    {
-        if (!is_callable($function, false, $method)) {
-            throw new \LogicException("'{$method}' cannot be called");
-        }
-        $this->page->additional[$name] = $function;
     }
 
     /**

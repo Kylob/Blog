@@ -76,8 +76,6 @@ class Blog
 
         // $this->theme
         $this->theme = new Theme($this);
-        $this->theme->globalVars('blog', $this->config('blog'));
-        $this->theme->addPageMethod('blog', array($this, 'query'));
 
         // $this->db
         $this->db = new SQLite($this->folder.'Blog.db');
@@ -786,7 +784,7 @@ class Blog
                 'blog' => array(
                     'name' => 'Another { BootPress } Site',
                     'image' => '',
-                    'listings' => 'blog',
+                    'listings' => '',
                     'breadcrumb' => 'Blog',
                     'theme' => 'default',
                 ),

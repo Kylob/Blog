@@ -43,9 +43,7 @@ class Component extends Blog
         } elseif ($template = $this->$method($params)) {
             $template = array_combine(array('file', 'type', 'vars'), $template);
             $template['default'] = __DIR__.'/theme/';
-            $this->theme->globalVars('blog', array('page' => $template['type']));
-            if (empty($template['file']) && $template['type'] != 'html') {
-            }
+            $this->theme->vars['blog']->properties['page'] = $template['type'];
         }
 
         return $template;

@@ -8,26 +8,25 @@
 {% endfor %}
 </ul>
 
-{{ page.set({
-    'title': 'The Archives at ' ~ blog.name,
-    'description': 'All of the blog posts at ' ~ blog.name ~ '.  Archived in the order they were received.'
-}) }}
+{{ page.set('title', 'The Archives @ ' ~ blog.name) }}
 
-<h2>The Archives</h2>
+{% for Y, years in archives|reverse(true) %}
 
-{% for Y, years in archives %}
-    <h3><a href="{{ years.url }}">{{ Y }}</a> <span class="label label-primary">{{ years.count }}</span></h3>
-    <div class="row">
+    <h3><a href="{{ years.url }}">{{ Y }} <span class="label label-primary pull-right">{{ years.count }}</span></a></h3>
+    
+    <div class="row" style="font-size:20px;">
     {% set columns = [] %}
     {% for M, months in years.months %}
-        <div class="col-sm-1 text-center">
-            <a href="{{ months.url }}" class="btn btn-link btn-block">{{ M }}
-            {% if months.count > 0 %}
-                <br> <span class="label label-primary">{{ months.count }} </span>
-            {% endif %}
-            </a>
+        <div class="col-xs-3 col-md-2 col-lg-1 center-block" style="height:100px;">
+            <p class="text-center">
+                <a href="{{ months.url }}">{{ M }}
+                {% if months.count > 0 %}
+                    <br><span class="label label-primary">{{ months.count }}</span>
+                {% endif %}
+                </a>
+            </p>
         </div>
     {% endfor %}
     </div>
-    <br>
+    
 {% endfor %}

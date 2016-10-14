@@ -6,12 +6,12 @@ use BootPress\Page\Component as PageClone;
 
 class Page
 {
-    public $additional = array();
-    private $methods = array();
+    public $methods = array();
+    private $native = array();
 
     public function __construct()
     {
-        $this->methods = array('set', 'url', 'get', 'post', 'tag', 'meta', 'link', 'style', 'script', 'jquery', 'id');
+        $this->native = array_fill_keys(array('set', 'url', 'get', 'post', 'tag', 'meta', 'link', 'style', 'script', 'jquery', 'id'), true);
     }
 
     public function __get($name)
@@ -21,15 +21,15 @@ class Page
 
     public function __isset($name)
     {
-        return (in_array($name, $this->methods) || isset($this->additional[$name])) ? false : true;
+        return (isset($this->native[$name]) || isset($this->methods[$name])) ? false : true;
     }
 
     public function __call($name, $arguments)
     {
-        if (in_array($name, $this->methods)) {
+        if (isset($this->native[$name])) {
             $result = call_user_func_array(array(PageClone::html(), $name), $arguments);
-        } elseif (isset($this->additional[$name])) {
-            $result = call_user_func_array($this->additional[$name], $arguments);
+        } elseif (isset($this->methods[$name]) && is_callable($this->methods[$name])) {
+            $result = call_user_func_array($this->methods[$name], $arguments);
         }
 
         return (isset($result) && !is_object($result)) ? $result : null;
