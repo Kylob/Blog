@@ -1855,6 +1855,14 @@ class BlogTest extends \BootPress\HTMLUnit\Component
         static::$blog->theme->vars['page']->methods['hello'] = function () { return 'World'; };
         static::$blog->theme->vars['page']->methods['amigo'] = 'Hello';
     }
+    
+    public function testObjectClass()
+    {
+        $obj = static::$blog->theme->vars['blog'];
+        $this->assertNull($obj->missing); // property
+        $this->assertNull($obj->missing()); // method
+        $this->assertEquals('Another { BootPress } Site', $obj->name);
+    }
 
     public function testThemeFetchTwigBlogFoldersException()
     {

@@ -26,9 +26,7 @@ class Object
     public function __call($name, $arguments)
     {
         if (isset($this->methods[$name]) && is_callable($this->methods[$name])) {
-            $result = call_user_func_array($this->methods[$name], $arguments);
+            return call_user_func_array($this->methods[$name], $arguments);
         }
-
-        return (isset($result) && !is_object($result)) ? $result : null;
     }
 }

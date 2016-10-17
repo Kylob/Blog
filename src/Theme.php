@@ -474,23 +474,51 @@ class Theme
     {
         if (func_num_args() == 0) {
             $var = array_slice(self::$templates, -1);
-            $var = array_shift($var);
-        } elseif (is_object($var)) {
-            $var = get_class($var).' Object';
-        } elseif (is_array($var)) {
-            array_walk_recursive($var, function (&$value) {
-                $value = is_object($value) ? get_class($value).' Object' : $value;
-            });
+            $var = array('global' => $this->vars) + array_shift($var);
         }
         $dumper = new HtmlDumper();
         $cloner = new VarCloner();
         $cloner->setMaxString(100);
         $output = '';
-        $dumper->dump($cloner->cloneVar($var), function ($line, $depth) use (&$output) {
+        $dumper->dump($cloner->cloneVar($this->cloner($var)), function ($line, $depth) use (&$output) {
             $output .= ($depth >= 0) ? str_repeat('    ', $depth).$line."\n" : '';
         });
 
         return trim($output);
+    }
+    
+    /**
+     * Returns a $var suitable for framing.
+     * 
+     * @param mixed $var 
+     * 
+     * @return mixed
+     *
+     * @used-by dump
+     *
+     * @todo Make private?
+     */
+    public function cloner($var)
+    {
+        if (is_object($var)) {
+            if ($var instanceof \BootPress\Blog\Object) {
+                $var = $var->properties + $var->methods;
+            } elseif ($var instanceof \BootPress\Blog\Page) {
+                $var = $var->html + $var->methods;
+            } else {
+                $var = get_class($var).' Object';
+            }
+        }
+        if (is_array($var)) {
+            $cloner = array();
+            foreach ($var as $key => $value) {
+                $cloner[$key] = $this->cloner($value);
+            }
+
+            return $cloner;
+        }
+
+        return $var;
     }
 
     /**
