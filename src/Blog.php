@@ -75,7 +75,7 @@ class Blog
         $page->url('set', 'blog/config', $blog.'page/'.substr($this->folder, strlen($page->dir['page'])));
 
         // $this->theme
-        $this->theme = new Theme($this);
+        $this->theme = new Twig\Theme($this);
 
         // $this->db
         $this->db = new SQLite($this->folder.'Blog.db');

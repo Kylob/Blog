@@ -42,7 +42,7 @@ class Component extends Blog
             $template = false;
         } elseif ($template = $this->$method($params)) {
             $template = array_combine(array('file', 'type', 'vars'), $template);
-            $template['default'] = __DIR__.'/theme/';
+            $template['default'] = __DIR__.'/templates/';
             $this->theme->vars['blog']->properties['page'] = $template['type'];
         }
 

@@ -122,7 +122,7 @@ class BlogTest extends \BootPress\HTMLUnit\Component
         // Test Blog constructor, properties, and destructor
         $blog = new Blog($page->dir('blog'));
         $this->assertInstanceOf('BootPress\Database\Component', $blog->db);
-        $this->assertAttributeInstanceOf('BootPress\Blog\Theme', 'theme', $blog);
+        $this->assertAttributeInstanceOf('BootPress\Blog\Twig\Theme', 'theme', $blog);
         $this->assertAttributeEquals($page->dir('blog'), 'folder', $blog);
         $this->assertEquals($page->url['base'].'blog.html', $page->url('blog'));
         $this->assertEquals($page->url['base'].'blog/listings.html', $page->url('blog', 'listings'));
@@ -1654,7 +1654,9 @@ class BlogTest extends \BootPress\HTMLUnit\Component
             'published: false', // will remove from sitemap
             '#}',
             '',
-            'The "{{ _self.getTemplateName() }}" {{ strtoupper("Template") }}',
+            '{% set array = [1:"one", "two":2, "three",] %}',
+            '',
+            'The "{{ _self.getTemplateName() }}" {{ strtoupper("Template") }} {{ array|keys|join(",") }} {{ array|join(",") }}',
         )));
         $template = $this->blogPage('category/unpublished-post.html');
         $this->assertEquals(0, $sitemap->db->value('SELECT COUNT(*) FROM sitemap WHERE path = ?', 'category/unpublished-post'));
@@ -1669,7 +1671,7 @@ class BlogTest extends \BootPress\HTMLUnit\Component
             'path' => 'category/unpublished-post',
             'url' => 'http://website.com/category/unpublished-post.html',
             'title' => 'Unpublished Post',
-            'content' => 'The "blog/content/category/unpublished-post/index.html.twig" TEMPLATE',
+            'content' => 'The "blog/content/category/unpublished-post/index.html.twig" TEMPLATE 1,two,0 one,2,three',
             'updated' => filemtime($file),
             'featured' => false,
             'published' => false,
@@ -1900,7 +1902,7 @@ class BlogTest extends \BootPress\HTMLUnit\Component
     public function testThemeMarkdownMethod()
     {
         $this->assertEquals('<p>There is no &quot;I&quot; in den<strong>i</strong>al</p>', trim(static::$blog->theme->markdown('There is no "I" in den**i**al')));
-        $engine = new \BootPress\Blog\Markdown(static::$blog->theme);
+        $engine = new \BootPress\Blog\Twig\Markdown(static::$blog->theme);
         $this->assertEquals('Blog\Markdown', $engine->getName());
         $this->assertNull(static::$blog->theme->markdown(new PHPLeagueCommonMarkEngine()));
     }
@@ -2015,6 +2017,7 @@ class BlogTest extends \BootPress\HTMLUnit\Component
         $blog = new Blog('blog');
         $twig = $blog->theme->getTwig(array('cache' => false));
         $twig->setLoader(new \Twig_Loader_Array(array(
+
             // Array Functions
             'array_change_key_case' => '{% set array = {FirSt: 1, SecOnd: 4} %} {{ array_change_key_case(array)|keys|join(",") }},{{ array_change_key_case(array, constant("CASE_UPPER"))|keys|join(",") }}',
             'array_chunk' => '{{ array_chunk(["a", "b", "c", "d", "e"], 3)|first|join(",") }}',

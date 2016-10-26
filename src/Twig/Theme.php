@@ -1,6 +1,6 @@
 <?php
 
-namespace BootPress\Blog;
+namespace BootPress\Blog\Twig;
 
 use BootPress\Page\Component as Page;
 use BootPress\Asset\Component as Asset;
@@ -32,13 +32,13 @@ class Theme
     /** @var array Twig macro namespaced properties. */
     private $plugin;
 
-    public function __construct(Blog $blog)
+    public function __construct(\BootPress\Blog\Blog $blog)
     {
         $this->blog = $blog;
-        $this->vars['blog'] = new \BootPress\Blog\Object($this->blog->config('blog'), array(
+        $this->vars['blog'] = new \BootPress\Blog\Twig\Object($this->blog->config('blog'), array(
             'query' => array($this->blog, 'query'),
         ));
-        $this->vars['page'] = new \BootPress\Blog\Page();
+        $this->vars['page'] = new \BootPress\Blog\Twig\Page();
         $this->vars['pagination'] = new Pagination();
     }
 
@@ -60,7 +60,7 @@ class Theme
                     mkdir($this->blog->folder.$dir, 0755, true);
                 }
             }
-            $loader = new \Twig_Loader_Filesystem($page->dir());
+            $loader = new \Twig_Loader_Filesystem($page->dir['page'], $page->dir['page']);
             $loader->addPath($this->blog->folder.'plugins/', 'plugin');
             $this->twig = new \Twig_Environment($loader, array_merge(array(
                 'cache' => $this->blog->folder.'cache/twig/',
@@ -343,6 +343,8 @@ class Theme
                 return (isset($vars['content'])) ? $vars['content'] : '';
             }
         }
+        $base = $page->dir['page'];
+        $cut = strlen($base);
         if (strpos($file, $this->blog->folder.'themes/') === 0) {
             $dir = $this->blog->folder.'themes/';
             $file = substr($file, strlen($dir));
@@ -351,25 +353,26 @@ class Theme
             $file = substr($file, strlen($theme));
             $loader = $this->getTwig()->getLoader();
             $loader->addPath($dir, 'theme');
-        } elseif (strpos($file, $page->dir()) === 0) {
-            $dir = dirname($file).'/';
+            $dir = substr($dir, $cut);
+        } elseif (strpos($file, $base) === 0) {
+            $dir = substr(dirname($file).'/', $cut);
             $file = basename($file);
         } else {
             throw new \LogicException("The '{$file}' is not in your website's Page::dir folder.");
         }
-        if (!is_file($dir.$file)) {
-            $file = substr($dir.$file, strlen($page->dir()));
-            throw new \LogicException("The '{$file}' file does not exist.");
+        if (!is_file($base.$dir.$file)) {
+            throw new \LogicException("The '{$dir}{$file}' file does not exist.");
+        }
+        if (is_null($this->asset)) { // our first time here
+            $this->getTwig()->setParser(new Parser($this->getTwig()));
         }
         $this->asset = array(
             'dir' => $dir,
             'chars' => $page->url['chars'],
         );
-        $template = substr($dir.$file, strlen($page->dir()));
-        self::$templates[] = array('template' => $template, 'vars' => $vars);
-        $vars = array_merge($vars, $this->vars);
+        self::$templates[] = array('template' => $dir.$file, 'vars' => $vars);
         try {
-            $html = $this->getTwig()->render($template, $vars);
+            $html = $this->getTwig()->render($dir.$file, array_merge($vars, $this->vars));
         } catch (\Exception $e) {
             $html = '<p>'.$e->getMessage().'</p>';
         }
@@ -415,7 +418,7 @@ class Theme
             )).'$/i', ltrim($path), $matches)) {
                 $page = Page::html();
                 $dir = ($twig) ? str_replace('\\', '/', dirname($this->getTwig()->getLoader()->getCacheKey($twig->getTemplateName()))) : $this->asset['dir'];
-                $asset = $page->url('page', substr($dir, strlen($page->dir['page'])), ltrim($matches[0], './'));
+                $asset = $page->url('page', $dir, ltrim($matches[0], './'));
             }
         } elseif ($this->asset && is_array($path)) {
             $asset = array();
@@ -501,9 +504,9 @@ class Theme
     public function cloner($var)
     {
         if (is_object($var)) {
-            if ($var instanceof \BootPress\Blog\Object) {
+            if ($var instanceof \BootPress\Blog\Twig\Object) {
                 $var = $var->properties + $var->methods;
-            } elseif ($var instanceof \BootPress\Blog\Page) {
+            } elseif ($var instanceof \BootPress\Blog\Twig\Page) {
                 $var = $var->html + $var->methods;
             } else {
                 $var = get_class($var).' Object';

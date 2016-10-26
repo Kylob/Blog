@@ -1,6 +1,6 @@
 <?php
 
-namespace BootPress\Blog;
+namespace BootPress\Blog\Twig;
 
 use BootPress\Page\Component as PageClone;
 
