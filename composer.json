@@ -24,7 +24,7 @@
         "jbroadway/urlify": "^1.0",
         "spartz/text-formatter": "^1.0", 
         "aptoma/twig-markdown": "^2.0",
-        "twig/twig": "^1.18"
+        "twig/twig": "^1.27"
     },
     "require-dev": {
         "bootpress/htmlunit": "^1.0",

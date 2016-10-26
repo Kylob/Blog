@@ -489,11 +489,11 @@ class Theme
 
         return trim($output);
     }
-    
+
     /**
      * Returns a $var suitable for framing.
      * 
-     * @param mixed $var 
+     * @param mixed $var
      * 
      * @return mixed
      *
