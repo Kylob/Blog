@@ -20,6 +20,13 @@ class Component extends Blog
      * - '**type**' => The kind of Blog page you are working with.  Either 'page', 'txt', 'json', 'xml', 'rdf', 'rss', 'atom', 'post', 'category', 'index', 'archives', 'authors', or 'tags'.
      * - '**vars**' => That that Twig template can access.
      * - '**default**' => An alternate '**file**' to use if the theme is missing the requested Twig template.
+     *
+     * ```php
+     * $blog = new \BootPress\Blog\Component();
+     * if ($template = $blog->page()) {
+     *     echo $blog->theme->renderTwig($template);
+     * }
+     * ```
      */
     public function page()
     {
