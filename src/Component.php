@@ -6,18 +6,20 @@ use BootPress\Page\Component as Page;
 use BootPress\Sitemap\Component as Sitemap;
 use BootPress\Hierarchy\Component as Hierarchy;
 
+/**
+ * A file based blog that can be implemented in any project. Includes featured, future, and similar posts, pages, listings, archives, authors, tags, categories, sitemaps, feeds, and full-text searching. No admin necessary.
+ */
 class Component extends Blog
 {
     /**
-     * Takes the current path and determines if there is any Blog content associated with it.
+     * Determine if there is any Blog content associated with the current url path.
      * 
-     * 
-     * @return array|bool False if there is not, or a ``$template`` array suitable for passing to ``$this->fetchTwig($template)`` with the following keys:
+     * @return bool|array False if there is not, or a ``$template`` array suitable for passing to ``$this->theme->renderTwig($template)`` that has the following keys:
      *
-     * - '**file**' - The appropriate TWIG template to process the 'vars'.
-     * - '**type**' - The kind of Blog page you are working with.  Either 'page', 'txt', 'json', 'xml', 'rdf', 'rss', 'atom', 'post', 'category', 'index', 'archives', 'authors', or 'tags'
-     * - '**vars**' - 
-     * - '**default**' - 
+     * - '**file**' => An appropriate Twig template for processing the '**vars**'.
+     * - '**type**' => The kind of Blog page you are working with.  Either 'page', 'txt', 'json', 'xml', 'rdf', 'rss', 'atom', 'post', 'category', 'index', 'archives', 'authors', or 'tags'.
+     * - '**vars**' => That that Twig template can access.
+     * - '**default**' => An alternate '**file**' to use if the theme is missing the requested Twig template.
      */
     public function page()
     {
