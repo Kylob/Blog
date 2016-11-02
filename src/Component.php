@@ -22,7 +22,6 @@ class Component extends Blog
      * - '**default**' => An alternate '**file**' to use if the theme is missing the requested Twig template.
      *
      * ```php
-     * $blog = new \BootPress\Blog\Component();
      * if ($template = $blog->page()) {
      *     echo $blog->theme->renderTwig($template);
      * }
