@@ -17,7 +17,13 @@ class Theme
     /** @var array Twig template files and the specific vars passed to them. */
     public static $templates = array();
 
-    /** @var array Global vars that are included in every Twig template. */
+    /**
+     * @var array Set and access global vars that are available in every Twig template.
+     *
+     * ```php
+     * $blog->theme->vars['bp'] = new \BootPress\Bootstrap\v3\Component();
+     * ```
+     */
     public $vars = array();
 
     /** @var object A BootPress\Blog\Blog instance. */
@@ -43,9 +49,9 @@ class Theme
     }
 
     /**
-     * Gets the Twig_Environment instance.  If you get to this before we do, then you can customize the ``$options``.
+     * Get the Twig_Environment instance.  If you get to this before we do, then you can customize the ``$options``.
      * 
-     * @param array $options An array of options.
+     * @param array $options
      * 
      * @return object
      *
@@ -320,14 +326,14 @@ class Theme
     }
 
     /**
-     * Renders a Twig template $file.
+     * Render a Twig template.
      *
      * @param string|array $file The template file.
      * @param array        $vars To pass to the Twig template.
      *
      * @return string
      *
-     * @throws LogicException If the $file does not exist, or if it is not in the Blog's 'content' or 'themes' folders.
+     * @throws LogicException If the **$file** is not in the ``$page->dir()``, or if it doesn't exist.
      */
     public function renderTwig($file, array $vars = array())
     {
@@ -381,7 +387,7 @@ class Theme
     }
 
     /**
-     * Returns an HTML Markdown string from $content, and allows you to set your preferred Markdown provider.
+     * Returns an HTML string from your Markdown **$content**, and allows you to set your preferred Markdown provider.
      * 
      * @param string|callable $content
      * 
