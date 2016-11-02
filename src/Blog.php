@@ -144,11 +144,11 @@ class Blog
      * If ``$type`` is:
      * 
      * - An ``array()`` - We will return an array of listings (ie. Blog posts or "The Loop") **IF** ``$params`` is a BootPress\Pagination\Component object (so we can know how many you want at a time), otherwise this will return the total number of listings.  If your array has one of the following keys, then it will only return the applicable listing's array (posts) or integer (count).
-     *   - '**archives**' - An ``array($from, $to)`` of UNIX timestamps.
-     *   - '**authors**' - An authors path (url) string eg. 'joe-bloggs'.
-     *   - '**tags**' - A tag path (url) string eg. 'tagged'.
-     *   - '**categories**' - A category path (url) string eg. 'category/subcategory'.
-     *   - '**search**' - A search term eg. 'search'.  This does not apply to 'archives', 'authors', or 'tags'.
+     *   - '**archives**' => An ``array($from, $to)`` of UNIX timestamps.
+     *   - '**authors**' => An authors path (url) string eg. 'joe-bloggs'.
+     *   - '**tags**' => A tag path (url) string eg. 'tagged'.
+     *   - '**categories**' => A category path (url) string eg. 'category/subcategory'.
+     *   - '**search**' => A search term eg. 'search'.  This does not apply to 'archives', 'authors', or 'tags'.
      *     - You "Loop" will also now contain a '**snippet**' string, and '**words**' array so that you can show the relevancy of your results.
      *     - If you really want to get fancy, then include a ``$type['weights']`` array of numbers to give more or less "weight" to the following (in order now): 'path', 'title', 'description', 'keywords', and 'content'.  The default weights are ``array(1,1,1,1,1)``, every field being of equal importance.
      *   - If by chance you already have the total count and want to save yourself a heap of time, you can include ``$type['count']`` with a total to help us out.
