@@ -17,10 +17,10 @@ class Blog
     /** @var string The current version. */
     const VERSION = '1.1';
 
-    /** @var BootPress\SQLite\Component The Blog's SQLite Database. */
+    /** @var object The Blog's BootPress\SQLite\Component Database. */
     protected $db;
 
-    /** @var BootPress\Blog\Theme For creating the layout, and fetching Twig templates. */
+    /** @var object A BootPress\Blog\Twig\Theme instance for creating layouts, and fetching Twig templates. */
     protected $theme;
 
     /** @var string Where the Blog directory resides. */
@@ -54,9 +54,13 @@ class Blog
     }
 
     /**
-     * Gets the Blog all set up and ready to go.
+     * Get the Blog all set up and ready to go.
      * 
      * @param string $folder Where you want the blog to go, relative to ``$page->dir()``.
+     *
+     * ```php
+     * $blog = new \BootPress\Blog\Component();
+     * ```
      */
     public function __construct($folder = 'blog')
     {
@@ -135,11 +139,11 @@ class Blog
     }
 
     /**
-     * Executes common queries on the Blog database.
+     * Executes common queries on the Blog database.  You can use this in your Twig templates via ``{{ blog.query() }}``.
      *
      * If ``$type`` is:
      * 
-     * - An ``array()`` - We will return an array of listings (ie. Blog posts or "The Loop") IF ``$params`` is a BootPress\Pagination\Component object (so we can know how many you want at a time), otherwise this will return the total number of listings.  If your array has one of the following keys, then it will only return the applicable listing's array (posts) or integer (count).
+     * - An ``array()`` - We will return an array of listings (ie. Blog posts or "The Loop") **IF** ``$params`` is a BootPress\Pagination\Component object (so we can know how many you want at a time), otherwise this will return the total number of listings.  If your array has one of the following keys, then it will only return the applicable listing's array (posts) or integer (count).
      *   - '**archives**' - An ``array($from, $to)`` of UNIX timestamps.
      *   - '**authors**' - An authors path (url) string eg. 'joe-bloggs'.
      *   - '**tags**' - A tag path (url) string eg. 'tagged'.
@@ -148,21 +152,72 @@ class Blog
      *     - You "Loop" will also now contain a '**snippet**' string, and '**words**' array so that you can show the relevancy of your results.
      *     - If you really want to get fancy, then include a ``$type['weights']`` array of numbers to give more or less "weight" to the following (in order now): 'path', 'title', 'description', 'keywords', and 'content'.  The default weights are ``array(1,1,1,1,1)``, every field being of equal importance.
      *   - If by chance you already have the total count and want to save yourself a heap of time, you can include ``$type['count']`` with a total to help us out.
+     *
+     * ```twig
+     * {% if not pagination.set('page', 10) %}
+     *     {{ pagination.total(blog.query([], 'count')) }}
+     * {% endif %}
+     * 
+     * {% set posts = blog.query([], pagination) %}
+     *
+     * {{ dump(posts) }}
+     * ```
+     *
      * - '**similar**' - Returns an array of similarly tagged listings for the current, comma-separated ``$page->keywords`` string.  Ordered by rank.
      *   - (required) Set ``$params`` to the maximum number you want to return.
-     *   - To specify the keywords, then set the $params to an ``array((int) 3, (string) 'custom, tags')`` for example.
+     *   - To specify the keywords, then set the $params to an ``array(3, 'custom, tags')`` for example.
+     *
+     * ```twig
+     * {{ dump(blog.query('similar', 3)) }}
+     * ```
+     *
      * - '**featured**' - Returns an array of featured blog posts.  Ordered by published date descending.
      *   - (optional) Set ``$params`` to the maximum number you want to return.
+     *
+     * ```twig
+     * {{ dump(blog.query('featured')) }}
+     * ```
+     *
      * - '**recent**' - Returns an array of recent blog posts, and excludes any featured posts.  Ordered by published date descending.
      *   - (optional) Set ``$params`` to the maximum number you want to return.  The default is 3.
-     * - '**posts**' - Get an array of ``$params`` listings, where $params is an array of posts (blog url paths) that you want.  Limit and order inherent.
+     *
+     * ```twig
+     * {{ dump(blog.query('recent', 3)) }}
+     * ```
+     *
+     * - '**posts**' - Get the ``$params`` blog url path's array of posts.  Limit and order inherent.
+     *
+     * ```twig
+     * {{ dump(blog.query('posts', ['path/one', 'path/two', 'path/three'])) }}
+     * ```
+     *
      * - '**archives**' - Returns an array of archive information for creating a menu of links.  Ordered by year descending (then months in order), and only includes years if count is greater than 0.
      *   - (optional) Set ``$params`` to an array of 'Y' years eg. ``array(2015, 2016)``
+     *
+     * ```twig
+     * {{ dump(blog.query('archives')) }}
+     * ```
+     *
      * - '**authors**' - Returns an array of author information for creating a menu of links.  Ordered by count descending, then author name ascending.
      *   - (optional) Set ``$params`` to the maximum number you want to return, or to a single author's url path eg. 'joe-bloggs'
+     *
+     * ```twig
+     * {{ dump(blog.query('authors')) }}
+     * ```
+     *
      * - '**tags**' - Returns an array of tag information for creating a menu of links.  Ordered by count descending, then tag name ascending.
      *   - (optional) Set ``$params`` to the maximum number you want to return, or to a single tag's url path eg. 'tagged'
+     *
+     * ```twig
+     * {{ dump(blog.query('tags')) }}
+     * ```
+     *
      * - '**categories**' - Returns an array of category information for creating a menu of links.  Ordered by category name ascending.
+     *
+     * ```twig
+     * {{ dump(blog.query('categories')) }}
+     * ```
+     *
      *
      * @param array|string $type
      * @param mixed        $params
