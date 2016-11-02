@@ -49,7 +49,7 @@ class Theme
     }
 
     /**
-     * Get the Twig_Environment instance.  If you get to this before we do, then you can customize the ``$options``.
+     * Get the Twig_Environment instance.  If you call this before we do, then you can customize the ``$options``.
      * 
      * @param array $options
      * 
