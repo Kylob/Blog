@@ -17,13 +17,17 @@ class Component extends Blog
      * @return bool|array False if there is not, or a ``$template`` array suitable for passing to ``$this->theme->renderTwig($template)`` that has the following keys:
      *
      * - '**file**' => An appropriate Twig template for processing the '**vars**'.
-     * - '**type**' => The kind of Blog page you are working with.  Either 'page', 'txt', 'json', 'xml', 'rdf', 'rss', 'atom', 'post', 'category', 'index', 'archives', 'authors', or 'tags'.
+     * - '**type**' => The kind of Blog page you are working with.  Either *'page'*, *'txt'*, *'json'*, *'xml'*, *'rdf'*, *'rss'*, *'atom'*, *'post'*, *'category'*, *'index'*, *'archives'*, *'authors'*, or *'tags'*.
      * - '**vars**' => That that Twig template can access.
      * - '**default**' => An alternate '**file**' to use if the theme is missing the requested Twig template.
      *
      * ```php
      * if ($template = $blog->page()) {
-     *     echo $blog->theme->renderTwig($template);
+     *     if (empty($template['file'])) { // A 'txt', 'json', 'xml', 'rdf', 'rss', or 'atom' page
+     *         $page->send(Asset::dispatch($template['type'], $template['vars']['content']));
+     *     } else { // An 'index.html.twig' file
+     *         $html = $blog->theme->renderTwig($template);
+     *     }
      * }
      * ```
      */
