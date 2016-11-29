@@ -69,11 +69,11 @@ if ($asset = Asset::cached('assets')) {
 
 // Implement a blog
 $blog = new Blog();
-if ($template = $blog->page()) {
-    if (empty($template['file'])) { // A 'txt', 'json', 'xml', 'rdf', 'rss', or 'atom' page
-        $page->send(Asset::dispatch($template['type'], $template['vars']['content']));
-    } else { // An 'index.html.twig' file
-        $html = $blog->theme->renderTwig($template);
+if ($file = $blog->page()) {
+    if (is_array($file)) { // An 'index.html.twig' file
+        $html = $blog->theme->renderTwig($file);
+    } else { // A 'txt', 'json', 'xml', 'rdf', 'rss', or 'atom' page
+        $page->send(Asset::dispatch($page->url['format'], $file));
     }
 }
 
