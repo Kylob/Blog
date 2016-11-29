@@ -345,9 +345,6 @@ class Theme
             if ($default && $template = $this->getFiles($file, $default)) {
                 $file = array_pop($template);
             }
-            if (empty($file)) {
-                return (isset($vars['content'])) ? $vars['content'] : '';
-            }
         }
         $base = $page->dir['page'];
         $cut = strlen($base);
