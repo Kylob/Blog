@@ -14,12 +14,12 @@ class Component extends Blog
     /**
      * Determine if there is any Blog content associated with the current url path.
      * 
-     * @return mixed Either ``false`` if there is not a corresponding ``$page->url['path']`` TWIG template, a string if ``$page->url['format'] != 'html'``, or an array suitable for passing to ``$blog->theme->renderTwig()`` with the following keys:
+     * @return mixed Either ``false`` if there is not a corresponding ``$page->url['path']`` Twig template, a string if ``$page->url['format'] != 'html'``, or an array suitable for passing to ``$blog->theme->renderTwig($file)`` with the following keys:
      *
-     * - '**file**' => An appropriate Twig template for processing the '**vars**'.
+     * - '**file**' => The appropriate Twig template that is equipped to deal with these '**type**' of '**vars**'.
      * - '**type**' => The kind of Blog page you are working with.  Either *'page'*, *'post'*, *'category'*, *'index'*, *'archives'*, *'authors'*, or *'tags'*.
-     * - '**vars**' => That Twig template can access.
-     * - '**default**' => An alternate '**file**' to use if the theme is missing the requested Twig template.
+     * - '**vars**' => For the Twig template to utilize.
+     * - '**default**' => An alternate '**file**' to use if it's missing in your theme.
      *
      * ```php
      * if ($file = $blog->page()) {
