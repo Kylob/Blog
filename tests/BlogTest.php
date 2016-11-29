@@ -1534,7 +1534,6 @@ class BlogTest extends \BootPress\HTMLUnit\Component
 
     public function testFeedListings()
     {
-        $template = $this->blogPage('blog/feed.rss');
         $this->assertEqualsRegExp(array(
             '<?xml version="1.0"?>',
             '<rss version="2.0">',
@@ -1587,12 +1586,7 @@ class BlogTest extends \BootPress\HTMLUnit\Component
                     '</item>',
                 '</channel>',
             '</rss>',
-        ), static::$blog->theme->renderTwig($template));
-        unset($template['vars']['content']);
-        $this->assertEquals('', $template['file']);
-        $this->assertEquals('rss', $template['type']);
-        $this->assertEquals(array(), $template['vars']);
-        $this->assertFileExists($template['default']);
+        ), $this->blogPage('blog/feed.rss'));
     }
 
     public function testNewPageInsertUpdateDelete()
