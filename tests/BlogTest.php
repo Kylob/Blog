@@ -141,7 +141,6 @@ class BlogTest extends \BootPress\HTMLUnit\Component
         #  
         #  This is my website.
         ##
-        print_r($template);
         $this->assertEqualsRegExp('This is my website.', static::$blog->theme->renderTwig($template));
         $this->assertEquals('blog-page.html.twig', $template['file']);
         $this->assertEquals(array(
@@ -1608,7 +1607,6 @@ class BlogTest extends \BootPress\HTMLUnit\Component
             'Twig {{ file_get_contents("../undefined.txt") }} Error',
         )));
         $template = $this->blogPage('category/unpublished-post.html');
-        print_r($template);
         $sitemap = new Sitemap();
         $this->assertEquals(1, $sitemap->db->value('SELECT COUNT(*) FROM sitemap WHERE path = ?', 'category/unpublished-post'));
         $this->assertEquals('blog-page.html.twig', $template['file']);
