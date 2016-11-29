@@ -116,11 +116,7 @@ class Component extends Blog
             $tree = $hier->tree(array('path', 'name'), 'path', $category);
             $counts = $hier->counts('blog', 'category_id');
             foreach ($tree as $id => $fields) {
-                if (isset($counts[$id])) {
-                    $tree[$id]['count'] = $counts[$id];
-                } else {
-                    unset($tree[$id]);
-                }
+                $tree[$id]['count'] = (isset($counts[$id])) ? $counts[$id] : 0;
             }
             foreach ($path as $row) {
                 $vars['category'][] = $row['name'];
