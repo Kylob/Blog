@@ -68,7 +68,7 @@
         
         <p>
             {% if post.page.image %}
-                <a href="{{ post.url }}"><img itemprop="image" src="{{ post.page.thumb }}?w=250&h=200" alt="{{ post.title }}" class="img-responsive" style="float:left; margin-right:15px;"></a>
+                <a href="{{ post.url }}"><img itemprop="image" src="{{ post.page.image }}?w=250&h=200" alt="{{ post.title }}" class="img-responsive" style="float:left; margin-right:15px;"></a>
             {% endif %}
             {% if search %}
                 {{ post.snippet }}
