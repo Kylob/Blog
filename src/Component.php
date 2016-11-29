@@ -71,13 +71,7 @@ class Component extends Blog
         extract($params); // 'id' and 'path'
         $page->enforce($path);
         $info = $this->info($id);
-        if (is_bool($info['published'])) { // a page of some sort
-            if ($dot = strpos($path, '.')) {
-                return array('', substr($path, $dot + 1), array('content' => $info['content']));
-            } else {
-                return array('blog-page.html.twig', 'post', $info);
-            }
-        }
+        $file = (is_bool($info['published'])) ? 'blog-page.html.twig' : 'blog-post-html.twig';
         $vars['post'] = $info;
         if ($search = $page->request->query->get('search')) {
             $sitemap = new Sitemap();
@@ -95,7 +89,7 @@ class Component extends Blog
         }
         $vars['breadcrumbs'][$vars['post']['title']] = $vars['post']['url'];
 
-        return array('blog-post.html.twig', 'post', $vars);
+        return array($file, 'post', $vars);
     }
 
     private function listings($params, array $vars = array())
