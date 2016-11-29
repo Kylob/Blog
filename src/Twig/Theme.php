@@ -75,6 +75,7 @@ class Theme
             ), $options));
             $this->twig->addExtension(new MarkdownExtension(new Markdown($this)));
             $this->twig->addFilter(new \Twig_SimpleFilter('asset', array($this, 'asset')));
+            $this->twig->addFunction(new \Twig_SimpleFunction('dir', array($this, 'dir')));
             $this->twig->addFunction(new \Twig_SimpleFunction('this', array($this, 'this')));
             $this->twig->addFunction(new \Twig_SimpleFunction('dump', array($this, 'dump'), array('is_safe' => 'html')));
             $this->twig->registerUndefinedFunctionCallback(function ($name) {
@@ -389,6 +390,30 @@ class Theme
      * @param string|callable $content
      * 
      * @return string|null
+     *
+     * @example
+     *
+     * ```twig
+     * <div>
+     *     <h1 class="someClass">{{ page.title }}</h1>
+     * 
+     *     {% markdown %}
+     *     This is a list that is indented to match the context around the markdown tag:
+     * 
+     *     * List item 1
+     *     * List item 2
+     *         * Sub List Item
+     *             * Sub Sub List Item
+     * 
+     *     The following block will be transformed as code, as it is indented more than the
+     *     surrounding content:
+     * 
+     *         $code = "good";
+     * 
+     *     {% endmarkdown %}
+     * 
+     * </div>
+     * ```
      */
     public function markdown($content)
     {
@@ -403,12 +428,18 @@ class Theme
     }
 
     /**
-     * Prepends a url to ``$path``, relative to the main index.html.twig being fetched.
+     * Prepends a url to **$path**, relative to the main index.html.twig being fetched.
      *
      * @param string|array $path An asset string eg. image.jpg
-     * @param object       $twig ``_self`` if the $path is relative to the current template.  This is useful for plugin macros and child themes.
+     * @param object       $twig ``_self`` if the **$path** is relative to the current template.  This is useful for plugin macros and child themes.
      *
-     * @return string|array Whatever the $path was.  If the $path's string is not a relative asset, then it is just returned as is.  If the $path is an array, then every key and value in it will be turned into a url if it is a relative asset, and the rest of the array will remain the same.
+     * @return string|array Whatever the **$path** was.  If the **$path**'s string is not a relative asset, then it is just returned as is.  If the **$path** is an array, then every key and value in it will be turned into a url if it is a relative asset, and the rest of the array will remain the same.
+     *
+     * @example
+     *
+     * ```twig
+     * <img src="{{ 'image.jpg'|asset }}">
+     * ```
      */
     public function asset($path, \Twig_Template $twig = null)
     {
@@ -420,8 +451,8 @@ class Theme
                 '.*',
             )).'$/i', ltrim($path), $matches)) {
                 $page = Page::html();
-                $dir = ($twig) ? str_replace('\\', '/', dirname($this->getTwig()->getLoader()->getCacheKey($twig->getTemplateName()))) : $this->asset['dir'];
-                $asset = $page->url('page', $dir, ltrim($matches[0], './'));
+                $dir = ($twig) ? $this->dir($twig, $matches[0]) : \phpUri::parse($this->asset['dir'])->join($matches[0]);
+                $asset = $page->url('page', $dir);
             }
         } elseif ($this->asset && is_array($path)) {
             $asset = array();
@@ -434,13 +465,34 @@ class Theme
     }
 
     /**
+     * Get an absolute **$path** relative to the **$twig** template.
+     * 
+     * @param object $twig ``_self`` so we know who you are.
+     * @param mixed  $path Relative to current folder.
+     * 
+     * @return string An absolute file **$path**.
+     *
+     * @example
+     *
+     * ```twig
+     * {% include dir(_self, '../file.html.twig') %}
+     * ```
+     */
+    public function dir(\Twig_Template $twig, $path = '')
+    {
+        return \phpUri::parse(str_replace('\\', '/', dirname($this->getTwig()->getLoader()->getCacheKey($twig->getTemplateName()))).'/')->join($path);
+    }
+
+    /**
      * A reference to the current template, sort of.  This enables your plugin macros to behave more like a class, and these are your properties.
      * 
      * @param object $twig  ``_self`` so we know who you are.
      * @param mixed  $key   What you want to either set or retrieve.  Pass ``null`` to remove them all.  Make it an array to set multiple values at once.
-     * @param mixed  $value Of the ``$key`` if you are setting it.  Pass ``null`` to remove only this one.
+     * @param mixed  $value Of the **$key** if you are setting it.  Pass ``null`` to remove only this one.
      * 
-     * @return mixed If you don't specify ``$key`` or ``$value``, then all of the "properties" (an array) will be returned.  If you don't include a ``$value``, then the ``$key`` will be returned if it exists.  Otherwise you get ``null``.
+     * @return mixed If you don't specify **$key** or **$value**, then all of the "properties" (an array) will be returned.  If you don't include a **$value**, then the **$key** will be returned if it exists.  Otherwise you get ``null``.
+     *
+     * @example
      *
      * ```twig
      * {{ this(_self, 'key', 'value') }}
@@ -475,6 +527,12 @@ class Theme
      * @param mixed $var If you don't have one, then we will pass the current template name and vars that we initially gave you.  Objects will only be named, and not displayed.
      * 
      * @return string
+     *
+     * @example
+     *
+     * ```twig
+     * {{ dump() }}
+     * ```
      */
     public function dump($var = null)
     {
@@ -491,40 +549,6 @@ class Theme
         });
 
         return trim($output);
-    }
-
-    /**
-     * Returns a $var suitable for framing.
-     * 
-     * @param mixed $var
-     * 
-     * @return mixed
-     *
-     * @used-by dump
-     *
-     * @todo Make private?
-     */
-    public function cloner($var)
-    {
-        if (is_object($var)) {
-            if ($var instanceof \BootPress\Blog\Twig\Object) {
-                $var = $var->properties + $var->methods;
-            } elseif ($var instanceof \BootPress\Blog\Twig\Page) {
-                $var = $var->html + $var->methods;
-            } else {
-                $var = get_class($var).' Object';
-            }
-        }
-        if (is_array($var)) {
-            $cloner = array();
-            foreach ($var as $key => $value) {
-                $cloner[$key] = $this->cloner($value);
-            }
-
-            return $cloner;
-        }
-
-        return $var;
     }
 
     /**
@@ -564,7 +588,39 @@ class Theme
     }
 
     /**
-     * Gets all the file ``$name``'s within the selected theme.
+     * Returns a **$var** suitable for displaying.
+     * 
+     * @param mixed $var
+     * 
+     * @return mixed
+     *
+     * @used-by dump
+     */
+    private function cloner($var)
+    {
+        if (is_object($var)) {
+            if ($var instanceof \BootPress\Blog\Twig\Object) {
+                $var = $var->properties + $var->methods;
+            } elseif ($var instanceof \BootPress\Blog\Twig\Page) {
+                $var = $var->html + $var->methods;
+            } else {
+                $var = get_class($var).' Object';
+            }
+        }
+        if (is_array($var)) {
+            $cloner = array();
+            foreach ($var as $key => $value) {
+                $cloner[$key] = $this->cloner($value);
+            }
+
+            return $cloner;
+        }
+
+        return $var;
+    }
+
+    /**
+     * Gets all the file **$name**'s within the selected theme.
      *
      * @param string $name    The file you are looking for eg. 'index.html.twig'
      * @param string $default The file path to a default template if no other is available.  It will be copied to the theme folder's root.  Must include a trailing slash.
