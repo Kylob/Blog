@@ -192,13 +192,14 @@ Aren't they ***beautiful***?
 {% endmarkdown %}
 ```
 
-When you check ``if ($template = $blog->page()) { ... }`` we will look for the corresponding URL Twig File, and if it is there, your ``$template`` will be an array with the following keys:
+When you check ``if ($file = $blog->page()) { ... }`` we will look for the corresponding Twig template, and if it is there, your **$file** will either be a string if ``$page->url['format'] != 'html'``, or an array suitable for passing to ``$blog->theme->renderTwig($file)`` with the following keys:
 
-- '**file**' - The appropriate Twig template that is equipped to deal with these '**type**' of '**vars**'.  If this is a 'txt', 'json', 'xml', 'rdf', 'rss', or 'atom' page then it will be empty.
-- '**type**' - The kind of Blog page you are working with.  Either 'page', 'txt', 'json', 'xml', 'rdf', 'rss', 'atom', 'post', 'category', 'index', 'archives', 'authors', or 'tags'.
-- '**vars**' - Varies according to the '**type**', but if the '**file**' is empty, you can go ahead and ``$page->send(Asset::dispatch($template['type'], $template['vars']['content']));``.  We don't automatically send it for you, so that you can have the opportunity to log or cache the output before sending.
+- '**file**' - The appropriate Twig template that is equipped to deal with these '**type**' of '**vars**'.
+- '**type**' - The kind of Blog page you are working with.  Either *'page'*, *'post'*, *'category'*, *'index'*, *'archives'*, *'authors'*, or *'tags'*.
+- '**vars**' - For the Twig template to utilize.
+- '**default**' => An alternate '**file**' to use if it's missing in your theme.
 
-At this point, you have your blog info, and you can do anything you want with it.  You can implement a BootPress Blog into any project.  It is as flexible as flexible can be, but if you like the way we do things so far, then let's continue shall we?
+We don't automatically ``$page->send()`` it, so that you can have the opportunity to log or cache the output beforehand.  Now you have your blog info, and you can do anything you want with it.  You can implement a BootPress Blog into any project.  It is as flexible as flexible can be, but if you like the way we do things so far, then let's continue shall we?
 
 ## Themes
 
