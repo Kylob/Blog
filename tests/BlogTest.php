@@ -789,9 +789,9 @@ class BlogTest extends \BootPress\HTMLUnit\Component
 
         // manual query
         $posts = static::$blog->query('similar', array(5, 'simple')); // specify keywords to use
-        $this->assertEquals(array(3), array_keys($posts));
+        $this->assertEquals(array(2), array_keys($posts));
         $posts = static::$blog->query('similar', array(5 => 'simple')); // specify keywords to use
-        $this->assertEquals(array(3), array_keys($posts));
+        $this->assertEquals(array(2), array_keys($posts));
         $posts = static::$blog->query('similar', array(5 => 'not-exists'));
         $this->assertEquals(array(), $posts); // no results
     }
