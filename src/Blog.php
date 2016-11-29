@@ -591,7 +591,7 @@ class Blog
                 $tree = $hier->tree(array('path', 'name'));
                 $counts = $hier->counts('blog', 'category_id');
                 foreach ($tree as $id => $fields) {
-                    $tree[$id]['count'] = $counts[$id];
+                    $tree[$id]['count'] = (isset($counts[$id])) ? $counts[$id] : 0;
                 }
                 $nest = $hier->nestify($tree);
                 $slice = array();
