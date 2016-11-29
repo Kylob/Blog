@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ## [1.2] - 2016-11-29
+### Added
+- Twig dir function for relative paths
+
 ### Changed
 - Make Parsedown the default Markdown provider
 - Only save html pages in database
