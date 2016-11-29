@@ -71,7 +71,7 @@ class Component extends Blog
         extract($params); // 'id' and 'path'
         $page->enforce($path);
         $info = $this->info($id);
-        $file = (is_bool($info['published'])) ? 'blog-page.html.twig' : 'blog-post-html.twig';
+        $file = (is_bool($info['published'])) ? 'blog-page.html.twig' : 'blog-post.html.twig';
         $vars['post'] = $info;
         if ($search = $page->request->query->get('search')) {
             $sitemap = new Sitemap();
