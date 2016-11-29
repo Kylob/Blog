@@ -196,10 +196,10 @@ When you check ``if ($file = $blog->page()) { ... }`` we will look for the corre
 
 - '**file**' - The appropriate Twig template that is equipped to deal with these '**type**' of '**vars**'.
 - '**type**' - The kind of Blog page you are working with.  Either *'page'*, *'post'*, *'category'*, *'index'*, *'archives'*, *'authors'*, or *'tags'*.
-- '**vars**' - For Twig template to utilize.
-- '**default**' => An alternate '**file**' to use if it's missing in the theme.
+- '**vars**' - For the Twig template to utilize.
+- '**default**' => An alternate '**file**' to use if it's missing in your theme.
 
-We don't automatically ``$page->send()`` it so that you can have the opportunity to log or cache the output beforehand.  Now you have your blog info, and you can do anything you want with it.  You can implement a BootPress Blog into any project.  It is as flexible as flexible can be, but if you like the way we do things so far, then let's continue shall we?
+We don't automatically ``$page->send()`` it, so that you can have the opportunity to log or cache the output beforehand.  Now you have your blog info, and you can do anything you want with it.  You can implement a BootPress Blog into any project.  It is as flexible as flexible can be, but if you like the way we do things so far, then let's continue shall we?
 
 ## Themes
 
