@@ -5,8 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-### Fixed
+
+## [1.2] - 2016-11-29
+### Changed
+- Make Parsedown the default Markdown provider
 - Only save html pages in database
+
+### Fixed
 - Empty category undefined offset
 
 ## [1.1] - 2016-10-25
