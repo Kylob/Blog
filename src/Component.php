@@ -14,19 +14,19 @@ class Component extends Blog
     /**
      * Determine if there is any Blog content associated with the current url path.
      * 
-     * @return bool|array False if there is not, or a ``$template`` array suitable for passing to ``$this->theme->renderTwig($template)`` that has the following keys:
+     * @return mixed Either ``false`` if there is not a corresponding ``$page->url['path']`` TWIG template, a string if ``$page->url['format'] != 'html'``, or an array suitable for passing to ``$blog->theme->renderTwig()`` with the following keys:
      *
      * - '**file**' => An appropriate Twig template for processing the '**vars**'.
-     * - '**type**' => The kind of Blog page you are working with.  Either *'page'*, *'txt'*, *'json'*, *'xml'*, *'rdf'*, *'rss'*, *'atom'*, *'post'*, *'category'*, *'index'*, *'archives'*, *'authors'*, or *'tags'*.
-     * - '**vars**' => That that Twig template can access.
+     * - '**type**' => The kind of Blog page you are working with.  Either *'page'*, *'post'*, *'category'*, *'index'*, *'archives'*, *'authors'*, or *'tags'*.
+     * - '**vars**' => That Twig template can access.
      * - '**default**' => An alternate '**file**' to use if the theme is missing the requested Twig template.
      *
      * ```php
-     * if ($template = $blog->page()) {
-     *     if (empty($template['file'])) { // A 'txt', 'json', 'xml', 'rdf', 'rss', or 'atom' page
-     *         $page->send(Asset::dispatch($template['type'], $template['vars']['content']));
-     *     } else { // An 'index.html.twig' file
-     *         $html = $blog->theme->renderTwig($template);
+     * if ($file = $blog->page()) {
+     *     if (is_array($file)) { // An 'index.html.twig' file
+     *         $html = $blog->theme->renderTwig($file);
+     *     } else { // A 'txt', 'json', 'xml', 'rdf', 'rss', or 'atom' page
+     *         $page->send(Asset::dispatch($page->url['format'], $file));
      *     }
      * }
      * ```
@@ -35,7 +35,11 @@ class Component extends Blog
     {
         $page = Page::html();
         $listings = $this->config('blog', 'listings');
-        if ($id = $this->file($page->url['path'])) {
+        if ($page->url['format'] != 'html') {
+            $file = (preg_match('/\.(txt|json|xml|rdf|rss|atom)$/', $page->url['path'])) ? $this->folder.'content/'.$page->url['path'].'.twig' : null;
+
+            return (is_file($file)) ? trim($this->theme->renderTwig($file)) : false;
+        } elseif ($id = $this->file($page->url['path'])) {
             $params = array('id' => $id, 'path' => $page->url['path']);
             $method = 'blog';
         } elseif ($route = $page->routes(array(
@@ -67,12 +71,8 @@ class Component extends Blog
         extract($params); // 'id' and 'path'
         $page->enforce($path);
         $info = $this->info($id);
-        if (is_bool($info['published'])) { // a page of some sort
-            if ($dot = strpos($path, '.')) {
-                return array('', substr($path, $dot + 1), array('content' => $info['content']));
-            } else {
-                return array('blog-page.html.twig', 'post', $info);
-            }
+        if (is_bool($info['published'])) {
+            return array('blog-page.html.twig', 'post', $info);
         }
         $vars['post'] = $info;
         if ($search = $page->request->query->get('search')) {

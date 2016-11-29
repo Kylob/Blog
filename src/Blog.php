@@ -622,31 +622,26 @@ class Blog
     }
 
     /**
-     * Analyzes the blog file $path and performes any database CRUD operations that may be needed.  We do this every time a blog page is visited, but this helps to speed up the process if you are doing things programatically.  If you are making lots of changes, then just delete the Blog.db file and everything will be updated.
+     * Analyzes a blog 'index.html.twig' file **$path** and performes any database CRUD operations that may be needed.  We do this every time a blog page is visited, but this helps to speed up the process if you are doing things programatically.  If you are making lots of changes, then just delete the Blog.db file and everything will be updated.
      * 
-     * @param string $path Either a folder (html) or file (txt|json|xml|rdf|rss|atom).
+     * @param string $path A folder with an 'index.html.twig' file.
      * 
-     * @return false|int False if the $path does not exist, or the database id if it does.
+     * @return mixed Either ''false`` if the file does not exist, or the database id if it does.
      */
     public function file($path)
     {
-        $html = (strpos($path, '.') === false) ? true : false;
         $blog = $this->db->row('SELECT id, path, updated, search, content FROM blog WHERE path = ?', $path, 'assoc');
-        if (!$current = $this->blogInfo($path)) {
-            if ($blog) { // then remove
+        if (!$current = $this->blogInfo($path)) { // delete
+            if ($blog) {
                 $this->db->exec('DELETE FROM blog WHERE id = ?', $blog['id']);
-                if ($html) {
-                    $this->db->exec('DELETE FROM tagged WHERE blog_id = ?', $blog['id']);
-                    $sitemap = new Sitemap();
-                    $sitemap->delete($blog['path']);
-                    unset($sitemap);
-                }
+                $this->db->exec('DELETE FROM tagged WHERE blog_id = ?', $blog['id']);
+                $sitemap = new Sitemap();
+                $sitemap->delete($blog['path']);
+                unset($sitemap);
             }
 
             return false;
-        }
-
-        if ($blog) { // update maybe
+        } elseif ($blog) { // update
             foreach (array('updated', 'search', 'content') as $field) {
                 if ($current[$field] != $blog[$field]) {
                     $updated = $this->db->update('blog', 'id', array($blog['id'] => $current));
@@ -661,40 +656,37 @@ class Blog
             $blog = $current;
             $blog['id'] = $this->db->insert('blog', $current);
         }
-
-        if ($html) {
-            $page = unserialize($current['page']);
-            if (isset($page['keywords'])) {
-                $tags = array_filter(array_map('trim', explode(',', $page['keywords'])));
-                foreach ($tags as $tag) {
-                    $this->db->insert('tagged', array(
-                        'blog_id' => $blog['id'],
-                        'tag_id' => $this->getId('tags', $tag),
-                    ));
-                }
-            }
-            $sitemap = new Sitemap();
-            if (!$current['search']) {
-                $sitemap->delete($blog['path']);
-            } else {
-                $category = 'blog';
-                if ($current['category_id'] > 0) {
-                    $category .= '/'.array_search($current['category_id'], $this->ids['categories']);
-                }
-                $sitemap->upsert($category, array(
-                    'id' => $blog['id'],
-                    'path' => $blog['path'],
-                    'title' => $current['title'],
-                    'description' => (isset($page['description'])) ? (string) $page['description'] : '',
-                    'keywords' => (isset($page['keywords'])) ? (string) $page['keywords'] : '',
-                    'image' => (isset($page['image'])) ? (string) $page['image'] : '',
-                    'content' => $current['content'],
-                    'updated' => $current['updated'],
+        $page = unserialize($current['page']);
+        if (isset($page['keywords'])) {
+            $tags = array_filter(array_map('trim', explode(',', $page['keywords'])));
+            foreach ($tags as $tag) {
+                $this->db->insert('tagged', array(
+                    'blog_id' => $blog['id'],
+                    'tag_id' => $this->getId('tags', $tag),
                 ));
             }
-            unset($sitemap);
-            $this->updateConfig();
         }
+        $sitemap = new Sitemap();
+        if (!$current['search']) {
+            $sitemap->delete($blog['path']);
+        } else {
+            $category = 'blog';
+            if ($current['category_id'] > 0) {
+                $category .= '/'.array_search($current['category_id'], $this->ids['categories']);
+            }
+            $sitemap->upsert($category, array(
+                'id' => $blog['id'],
+                'path' => $blog['path'],
+                'title' => $current['title'],
+                'description' => (isset($page['description'])) ? (string) $page['description'] : '',
+                'keywords' => (isset($page['keywords'])) ? (string) $page['keywords'] : '',
+                'image' => (isset($page['image'])) ? (string) $page['image'] : '',
+                'content' => $current['content'],
+                'updated' => $current['updated'],
+            ));
+        }
+        unset($sitemap);
+        $this->updateConfig();
 
         return $blog['id'];
     }
@@ -704,7 +696,7 @@ class Blog
      * 
      * @param int|int[] $ids That correspond to the database.
      * 
-     * @return array A single row of information if $ids is not an array, or multiple rows foreach id in the same order given that you can loop through.
+     * @return array A single row of information if **$ids** is not an array, or multiple rows foreach id in the same order given that you can loop through.
      */
     public function info($ids)
     {
@@ -912,31 +904,15 @@ class Blog
     }
 
     /**
-     * Looks up a file, and gleans the information in it.
+     * Looks up an 'index.html.twig' file, and gleans the information in it.
      * 
-     * @param string $path Either a folder (html) or file (txt|json|xml|rdf|rss|atom).
+     * @param string $path A blog content folder.
      * 
-     * @return array|bool An array if the $path was found, or false if not.
+     * @return array|bool An array if the **$path** was found, or ``false`` if not.
      */
     private function blogInfo($path)
     {
         $page = Page::html();
-        if (preg_match('/\.(txt|json|xml|rdf|rss|atom)$/', $path)) {
-            $file = $this->folder.'content/'.$path.'.twig';
-
-            return (is_file($file)) ? array(
-                'page' => serialize(array()),
-                'path' => $path,
-                'title' => '',
-                'featured' => 0,
-                'published' => 1,
-                'updated' => filemtime($file) * -1,
-                'author_id' => 0,
-                'category_id' => 0,
-                'search' => 0,
-                'content' => trim($this->theme->renderTwig($file)),
-            ) : false;
-        }
         $dir = $this->folder.'content/';
         if (preg_match('/[^'.$page->url['chars'].'\/]/', $path)) {
             $seo = $this->url($path, 'slashes');
@@ -1007,36 +983,32 @@ class Blog
         $sitemap->reset('blog');
         $this->normalizeFolders();
         $finder = new Finder();
-        $finder->files()->in($this->folder.'content')->name('index.html.twig')->name('/^['.Page::html()->url['chars'].']+\.(txt|json|xml|rdf|rss|atom)\.twig$/')->sortByName();
+        $finder->files()->in($this->folder.'content')->name('index.html.twig')->sortByName();
         foreach ($finder as $file) {
-            $html = (substr($file->getRelativePathname(), -15) == 'index.html.twig') ? true : false;
-            $path = ($html) ? $file->getRelativePath() : substr($file->getRelativePathname(), 0, -5); // remove .twig
-            if ($info = $this->blogInfo(str_replace('\\', '/', $path))) {
+            if ($info = $this->blogInfo(str_replace('\\', '/', $file->getRelativePath()))) {
                 $id = $this->db->insert($blog, array_values($info));
-                if ($html) {
-                    $page = unserialize($info['page']);
-                    if (isset($page['keywords']) && !empty($page['keywords'])) {
-                        $tags = array_filter(array_map('trim', explode(',', $page['keywords'])));
-                        foreach ($tags as $tag) {
-                            $this->db->insert($tagged, array($id, $this->getId('tags', $tag)));
-                        }
+                $page = unserialize($info['page']);
+                if (isset($page['keywords']) && !empty($page['keywords'])) {
+                    $tags = array_filter(array_map('trim', explode(',', $page['keywords'])));
+                    foreach ($tags as $tag) {
+                        $this->db->insert($tagged, array($id, $this->getId('tags', $tag)));
                     }
-                    $category = 'blog';
-                    if ($info['category_id'] > 0) {
-                        $category .= '/'.array_search($info['category_id'], $this->ids['categories']);
-                    }
-                    if ($info['search']) {
-                        $sitemap->upsert($category, array(
-                            'id' => $id,
-                            'path' => $info['path'],
-                            'title' => $info['title'],
-                            'description' => (isset($page['description'])) ? (string) $page['description'] : '',
-                            'keywords' => (isset($page['keywords'])) ? (string) $page['keywords'] : '',
-                            'image' => (isset($page['image'])) ? (string) $page['image'] : '',
-                            'content' => $info['content'],
-                            'updated' => $info['updated'],
-                        ));
-                    }
+                }
+                $category = 'blog';
+                if ($info['category_id'] > 0) {
+                    $category .= '/'.array_search($info['category_id'], $this->ids['categories']);
+                }
+                if ($info['search']) {
+                    $sitemap->upsert($category, array(
+                        'id' => $id,
+                        'path' => $info['path'],
+                        'title' => $info['title'],
+                        'description' => (isset($page['description'])) ? (string) $page['description'] : '',
+                        'keywords' => (isset($page['keywords'])) ? (string) $page['keywords'] : '',
+                        'image' => (isset($page['image'])) ? (string) $page['image'] : '',
+                        'content' => $info['content'],
+                        'updated' => $info['updated'],
+                    ));
                 }
             }
         }

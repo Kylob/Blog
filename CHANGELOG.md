@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Fixed
+- Only save html pages in database
 - Empty category undefined offset
 
 ## [1.1] - 2016-10-25
