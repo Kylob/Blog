@@ -1,6 +1,6 @@
 {
     "name": "bootpress/blog",
-    "description": "A file based blog that can be implemented in any project.  Includes featured, future, and similar posts, pages, listings, archives, authors, tags, categories, sitemaps, feeds, and full-text searching.  No admin necessary.",
+    "description": "A flat file Blog and CMS that doesn't skimp on features, and can be utilized in any website.",
     "keywords": ["bootpress", "blog", "flat-file", "cms", "twig", "markdown"],
     "license": "MIT",
     "authors": [
@@ -24,7 +24,7 @@
         "pguardiario/phpuri": "^1.0",
         "spartz/text-formatter": "^1.0",
         "aptoma/twig-markdown": "^2.0",
-        "erusev/parsedown": "^1.6",
+        "league/commonmark": "~0.7",
         "twig/twig": "^1.27"
     },
     "require-dev": {
