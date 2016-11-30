@@ -8,7 +8,7 @@
 [![Code Climate][badge-code-climate]][link-code-climate]
 [![Test Coverage][badge-coverage]][link-coverage]
 
-A file based blog that can be implemented in any project.  Includes featured, future, and similar posts, pages, listings, archives, authors, tags, categories, sitemaps, feeds, and full-text searching.  No admin necessary.
+A flat file Blog and CMS that doesn't skimp on features, and can be utilized in any website.
 
 ## Installation
 
