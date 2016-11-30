@@ -10,7 +10,7 @@ use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 use Aptoma\Twig\Extension\MarkdownExtension;
 use Aptoma\Twig\Extension\MarkdownEngineInterface;
-use Aptoma\Twig\Extension\MarkdownEngine\ParsedownEngine;
+use Aptoma\Twig\Extension\MarkdownEngine\PHPLeagueCommonMarkEngine;
 
 class Theme
 {
@@ -421,7 +421,7 @@ class Theme
         if ($content instanceof MarkdownEngineInterface) {
             $markdown = $content;
         } elseif (is_null($markdown)) {
-            $markdown = new ParsedownEngine();
+            $markdown = new PHPLeagueCommonMarkEngine();
         }
 
         return (is_string($content)) ? $markdown->transform($content) : null;
