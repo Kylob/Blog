@@ -24,6 +24,7 @@
         "pguardiario/phpuri": "^1.0",
         "spartz/text-formatter": "^1.0",
         "aptoma/twig-markdown": "^2.0",
+        "league/commonmark": "~0.7",
         "erusev/parsedown": "^1.6",
         "twig/twig": "^1.27"
     },
