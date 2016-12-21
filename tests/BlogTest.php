@@ -1620,7 +1620,7 @@ class BlogTest extends \BootPress\HTMLUnit\Component
             'path' => 'category/unpublished-post',
             'url' => 'http://website.com/category/unpublished-post.html',
             'title' => 'Unpublished Post',
-            'content' => '<p>Unknown "file_get_contents" function in "blog/content/category/unpublished-post/index.html.twig" at line 8.</p>',
+            'content' => '<p>Unknown "file_get_contents" function.</p>',
             'updated' => filemtime($file),
             'featured' => false,
             'published' => true,
@@ -1889,7 +1889,7 @@ class BlogTest extends \BootPress\HTMLUnit\Component
         unlink($default);
         $default = $page->file('blog/themes/default/default.html.twig');
         $this->assertFileExists($default);
-        $this->assertEquals('<p>Unknown "template" tag in "blog/themes/default/default.html.twig" at line 1.</p>', static::$blog->theme->renderTwig($default, array('syntax' => 'error'), 'testing'));
+        $this->assertEquals('<p>Unknown "template" tag.</p>', static::$blog->theme->renderTwig($default, array('syntax' => 'error'), 'testing'));
         unlink($default);
     }
 
