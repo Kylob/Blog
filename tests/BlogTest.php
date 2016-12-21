@@ -1879,7 +1879,7 @@ class BlogTest extends \BootPress\HTMLUnit\Component
         file_put_contents($default, 'Default {% template %}');
 
         // Syntax Error
-        $this->assertEquals('<p>Unknown "template" tag in "blog/themes/default/default.html.twig" at line 1.</p>', static::$blog->theme->renderTwig(array(
+        $this->assertEquals('<p>Unknown "template" tag.</p>', static::$blog->theme->renderTwig(array(
             'default' => $page->dir(),
             'vars' => array('syntax' => 'error'),
             'file' => 'default.html.twig',
