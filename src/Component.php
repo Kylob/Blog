@@ -22,12 +22,10 @@ class Component extends Blog
      * - '**default**' => An alternate '**file**' to use if it's missing in your theme.
      *
      * ```php
-     * if ($file = $blog->page()) {
-     *     if (is_array($file)) { // An 'index.html.twig' file
-     *         $html = $blog->theme->renderTwig($file);
-     *     } else { // A 'txt', 'json', 'xml', 'rdf', 'rss', or 'atom' page
-     *         $page->send(Asset::dispatch($page->url['format'], $file));
-     *     }
+     * if (is_array($file = $blog->page())) { // An 'index.html.twig' file
+     *     $html = $blog->theme->renderTwig($file);
+     * } elseif ($file !== false) { // A 'txt', 'json', 'xml', 'rdf', 'rss', or 'atom' page
+     *     $page->send(Asset::dispatch($page->url['format'], $file));
      * }
      * ```
      */
