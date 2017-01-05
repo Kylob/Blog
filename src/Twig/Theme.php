@@ -7,6 +7,7 @@ use BootPress\Asset\Component as Asset;
 use BootPress\Pagination\Component as Pagination;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Dumper\CliDumper;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 use Aptoma\Twig\Extension\MarkdownExtension;
 use Aptoma\Twig\Extension\MarkdownEngineInterface;
@@ -14,16 +15,13 @@ use Aptoma\Twig\Extension\MarkdownEngine\PHPLeagueCommonMarkEngine;
 
 class Theme
 {
+    /** @var object This self if you don't have ready access to the Blog that called it. */
+    public static $instance;
+
     /** @var array Twig template files and the specific vars passed to them. */
     public static $templates = array();
 
-    /**
-     * @var array Set and access global vars that are available in every Twig template.
-     *
-     * ```php
-     * $blog->theme->vars['bp'] = new \BootPress\Bootstrap\v3\Component();
-     * ```
-     */
+    /** @var array Global vars that are available in every Twig template. */
     public $vars = array();
 
     /** @var object A BootPress\Blog\Blog instance. */
@@ -40,6 +38,7 @@ class Theme
 
     public function __construct(\BootPress\Blog\Blog $blog)
     {
+        self::$instance = $this;
         $this->blog = $blog;
         $this->vars['blog'] = new \BootPress\Blog\Twig\Object($this->blog->config('blog'), array(
             'query' => array($this->blog, 'query'),
@@ -374,12 +373,21 @@ class Theme
             'dir' => $dir,
             'chars' => $page->url['chars'],
         );
-        self::$templates[] = array('template' => $dir.$file, 'vars' => $vars);
+        $save = array(
+            'template' => $dir.$file,
+            'vars' => $vars,
+            'start' => microtime(true),
+        );
         try {
             $html = $this->getTwig()->render($dir.$file, array_merge($vars, $this->vars));
+            $save['output'] = $html;
         } catch (\Exception $e) {
             $html = '<p>'.$e->getMessage().'</p>';
+            $save['error'] = $e->getMessage();
         }
+        $save['end'] = microtime(true);
+        $save['time'] = $save['end'] - $save['start'];
+        self::$templates[] = $save;
 
         return $html;
     }
@@ -522,7 +530,7 @@ class Theme
     }
 
     /**
-     * Dumps a beautifully formatted debug string of your $var.
+     * Dumps a beautifully formatted debug string of your **$var**.
      * 
      * @param mixed $var If you don't have one, then we will pass the current template name and vars that we initially gave you.  Objects will only be named, and not displayed.
      * 
@@ -538,17 +546,10 @@ class Theme
     {
         if (func_num_args() == 0) {
             $var = array_slice(self::$templates, -1);
-            $var = array('global' => $this->vars) + array_shift($var);
+            $var = array('global' => $this->vars, 'vars' => $var['vars']);
         }
-        $dumper = new HtmlDumper();
-        $cloner = new VarCloner();
-        $cloner->setMaxString(100);
-        $output = '';
-        $dumper->dump($cloner->cloneVar($this->cloner($var)), function ($line, $depth) use (&$output) {
-            $output .= ($depth >= 0) ? str_repeat('    ', $depth).$line."\n" : '';
-        });
 
-        return trim($output);
+        return self::dumper($var);
     }
 
     /**
@@ -587,36 +588,59 @@ class Theme
         return $this->renderTwig(array_pop($index), $vars);
     }
 
+    public static function dumper($var, array $options)
+    {
+        extract(array_merge(array(
+            'dumper' => ('cli' === PHP_SAPI) ? 'cli' : 'html',
+            'items' => 100,
+            'string' => 100,
+            'indent' => '    ',
+        ), $options));
+        $output = '';
+        $cloner = new VarCloner();
+        $cloner->setMaxItems($items);
+        $cloner->setMaxString($string);
+        $dumper = ($dumper == 'cli') ? new CliDumper() : new HtmlDumper();
+        $dumper->dump($cloner->cloneVar(self::wringer($var)), function ($line, $depth) use (&$output, $indent) {
+            $output .= ($depth >= 0) ? str_repeat($indent, $depth).$line."\n" : '';
+        });
+
+        return trim($output);
+    }
+
     /**
-     * Returns a **$var** suitable for displaying.
+     * Returns **$data** suitable for displaying.
      * 
-     * @param mixed $var
+     * @param mixed $data
      * 
      * @return mixed
      *
-     * @used-by dump
+     * @used-by dumper
      */
-    private function cloner($var)
+    private static function wringer($data)
     {
-        if (is_object($var)) {
-            if ($var instanceof \BootPress\Blog\Twig\Object) {
-                $var = $var->properties + $var->methods;
-            } elseif ($var instanceof \BootPress\Blog\Twig\Page) {
-                $var = $var->html + $var->methods;
+        if (is_object($data)) {
+            if ($data instanceof \BootPress\Blog\Twig\Object) {
+                $data = $data->properties + $data->methods;
+            } elseif ($data instanceof \BootPress\Blog\Twig\Page) {
+                $data = $data->html + $data->methods;
             } else {
-                $var = get_class($var).' Object';
+                $data = get_class($data).' Object';
             }
         }
-        if (is_array($var)) {
+        if (is_array($data)) {
             $cloner = array();
-            foreach ($var as $key => $value) {
-                $cloner[$key] = $this->cloner($value);
+            foreach ($data as $key => $value) {
+                $cloner[$key] = self::wringer($value);
             }
 
             return $cloner;
         }
+        if (is_string($data)) {
+            $data = str_replace(array("\r", "\n", "\t"), array('\\r', '\\n', '\\t'), $data);
+        }
 
-        return $var;
+        return $data;
     }
 
     /**
