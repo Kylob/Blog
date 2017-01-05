@@ -546,7 +546,8 @@ class Theme
     {
         if (func_num_args() == 0) {
             $var = array_slice(self::$templates, -1);
-            $var = array('global' => $this->vars, 'vars' => $var['vars']);
+            print_r($var);
+            $var = array('global' => $this->vars) + array_shift($var);
         }
 
         return self::dumper($var);
