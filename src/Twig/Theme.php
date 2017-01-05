@@ -545,9 +545,9 @@ class Theme
     public function dump($var = null)
     {
         if (func_num_args() == 0) {
-            $var = array_slice(self::$templates, -1);
+            $var = array_shift(array_slice(self::$templates, -1));
             print_r($var);
-            $var = array('global' => $this->vars) + array_shift($var);
+            $var = array('global' => $this->vars, 'vars' => $var['vars']);
         }
 
         return self::dumper($var);
@@ -589,7 +589,7 @@ class Theme
         return $this->renderTwig(array_pop($index), $vars);
     }
 
-    public static function dumper($var, array $options)
+    public static function dumper($var, array $options = array())
     {
         extract(array_merge(array(
             'dumper' => ('cli' === PHP_SAPI) ? 'cli' : 'html',
