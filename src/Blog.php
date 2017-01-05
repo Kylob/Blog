@@ -15,7 +15,7 @@ use URLify;
 class Blog
 {
     /** @var string The current version. */
-    const VERSION = '1.2';
+    const VERSION = '1.3';
 
     /** @var object The Blog's BootPress\SQLite\Component Database. */
     protected $db;
