@@ -550,7 +550,7 @@ class Theme
             $var = array('global' => $this->vars, 'vars' => $var['vars']);
         }
 
-        return self::dumper($var);
+        return self::dumper($var, array('dumper' => 'html'));
     }
 
     /**
