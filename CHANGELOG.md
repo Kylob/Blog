@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.3] - 2017-01-04
+### Added
+- Microtimes to Twig templates debug data
+- Static Theme dumper method
+
 ## [1.2] - 2016-11-29
 ### Added
 - Twig dir function for relative paths
