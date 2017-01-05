@@ -545,8 +545,8 @@ class Theme
     public function dump($var = null)
     {
         if (func_num_args() == 0) {
-            $var = array_shift(array_slice(self::$templates, -1));
-            print_r($var);
+            $var = array_slice(self::$templates, -1);
+            $var = array_shift($var);
             $var = array('global' => $this->vars, 'vars' => $var['vars']);
         }
 
