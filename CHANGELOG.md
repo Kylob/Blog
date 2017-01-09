@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.1] - 2016-10-25
 ### Added
-- Optionally specify Twig array keys via a colon (:), similar to hashes
+- Optionally specify Twig array keys via '**:**' colon, similar to hashes
 - Improved Global Vars Dump
 
 ### Fixed
