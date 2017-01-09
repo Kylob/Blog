@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.4] - 2017-01-08
+### Added
+- ParsedownExtra as default markdown provider
+- Custom callable markdown implementations
+
 ## [1.3] - 2017-01-04
 ### Added
 - Microtimes to Twig templates debug data
