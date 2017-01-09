@@ -8,7 +8,6 @@ use BootPress\Sitemap\Component as Sitemap;
 use BootPress\Pagination\Component as Pagination;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Yaml\Yaml;
-use Aptoma\Twig\Extension\MarkdownEngine\PHPLeagueCommonMarkEngine;
 
 class BlogTest extends \BootPress\HTMLUnit\Component
 {
@@ -1898,7 +1897,9 @@ class BlogTest extends \BootPress\HTMLUnit\Component
         $this->assertEquals('<p>There is no &quot;I&quot; in den<strong>i</strong>al</p>', trim(static::$blog->theme->markdown('There is no "I" in den**i**al')));
         $engine = new \BootPress\Blog\Twig\Markdown(static::$blog->theme);
         $this->assertEquals('Blog\Markdown', $engine->getName());
-        $this->assertNull(static::$blog->theme->markdown(new PHPLeagueCommonMarkEngine));
+        $callable = function ($content) { return 'markdown'; };
+        $this->assertNull(static::$blog->theme->markdown($callable));
+        $this->assertEquals('markdown', static::$blog->theme->markdown('content'));
     }
 
     public function testThemeAssetAndThisMethods()
