@@ -427,7 +427,7 @@ class Theme
         if (is_callable($content)) {
             $markdown = $content;
         } elseif (is_null($markdown)) {
-            $parsedown = new ParsedownExtra();
+            $parsedown = new \ParsedownExtra();
             $markdown = function ($content) use ($parsedown) {
                 return $parsedown->text($content);
             };
