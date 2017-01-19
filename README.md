@@ -69,12 +69,14 @@ if ($asset = Asset::cached('assets')) {
 
 // Implement a blog
 $blog = new Blog();
-if ($file = $blog->page()) {
+if (false !== $file = $blog->page()) {
     if (is_array($file)) { // An 'index.html.twig' file
         $html = $blog->theme->renderTwig($file);
     } else { // A 'txt', 'json', 'xml', 'rdf', 'rss', or 'atom' page
         $page->send(Asset::dispatch($page->url['format'], $file));
     }
+} else {
+    $page->send(404);
 }
 
 // Create the layout
