@@ -2,6 +2,7 @@
     "name": "bootpress/blog",
     "description": "A flat file Blog and CMS that doesn't skimp on features, and can be utilized in any website.",
     "keywords": ["bootpress", "blog", "flat-file", "cms", "twig", "markdown"],
+    "homepage": "https://www.bootpress.org/components/blog.html",
     "license": "MIT",
     "authors": [
         {
