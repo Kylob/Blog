@@ -22,7 +22,7 @@
         "symfony/finder": "^2.3||^3.0",
         "symfony/yaml": "^2.3||^3.0",
         "jbroadway/urlify": "^1.0",
-        "pguardiario/phpuri": "^1.0",
+        "xsirix/phpuri": "^1.0",
         "spartz/text-formatter": "^1.0",
         "aptoma/twig-markdown": "^2.0",
         "erusev/parsedown-extra": "^0.7",
