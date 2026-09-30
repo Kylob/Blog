@@ -38,7 +38,7 @@ class Theme
     {
         self::$instance = $this;
         $this->blog = $blog;
-        $this->vars['blog'] = new \BootPress\Blog\Twig\Object($this->blog->config('blog'), array(
+        $this->vars['blog'] = new \BootPress\Blog\Twig\Blog($this->blog->config('blog'), array(
             'query' => array($this->blog, 'query'),
         ));
         $this->vars['page'] = new \BootPress\Blog\Twig\Page();
@@ -127,9 +127,6 @@ class Theme
                     // JSON Functions
                     case 'json_decode': // Decodes a JSON string
                     case 'json_encode': // Returns the JSON representation of a value
-
-                    // Mail Functions
-                    case 'mail': // Send mail
 
                     // Math Functions
                     case 'abs': // Absolute value
@@ -622,7 +619,7 @@ class Theme
     private static function wringer($data)
     {
         if (is_object($data)) {
-            if ($data instanceof \BootPress\Blog\Twig\Object) {
+            if ($data instanceof \BootPress\Blog\Twig\Blog) {
                 $data = $data->properties + $data->methods;
             } elseif ($data instanceof \BootPress\Blog\Twig\Page) {
                 $data = $data->html + $data->methods;
