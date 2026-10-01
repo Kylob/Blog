@@ -9,7 +9,7 @@ use BootPress\Hierarchy\Component as Hierarchy;
 use BootPress\Pagination\Component as Pagination;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
-use Spartz\TextFormatter\TextFormatter;
+use Cmgmyr\TitleFormatter\TitleFormatter;
 use URLify;
 
 class Blog
@@ -810,7 +810,7 @@ class Blog
             }
         }
 
-        return TextFormatter::titleCase(implode(' ', $string));
+        return TitleFormatter::titleCase(implode(' ', $string));
     }
 
     /**
