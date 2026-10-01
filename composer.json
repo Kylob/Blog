@@ -24,7 +24,7 @@
         "jbroadway/urlify": "^1.0",
         "xsirix/phpuri": "^1.0",
         "cmgmyr/title-formatter": "^1.0",
-        "aptoma/twig-markdown": "^2.0",
+        "aptoma/twig-markdown": "2.0.0",
         "erusev/parsedown-extra": "^0.7",
         "twig/twig": "^1.27"
     },
