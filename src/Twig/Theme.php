@@ -10,6 +10,7 @@ use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 use Aptoma\Twig\Extension\MarkdownExtension;
+use Parsedown;
 
 class Theme
 {
@@ -388,7 +389,7 @@ class Theme
     }
 
     /**
-     * Returns an HTML string from your Markdown **$content**, and allows you to set your preferred Markdown provider.
+     * Returns an HTML string from your Markdown **$content**.
      * 
      * @param string|callable $content
      * 
@@ -420,17 +421,27 @@ class Theme
      */
     public function markdown($content)
     {
-        static $markdown = null;
-        if (is_callable($content)) {
-            $markdown = $content;
-        } elseif (is_null($markdown)) {
-            $parsedown = new \ParsedownExtra();
-            $markdown = function ($content) use ($parsedown) {
-                return $parsedown->text($content);
-            };
-        }
-
-        return (is_string($content)) ? $markdown($content) : null;
+		static $markdown = new Parsedown();
+		if (!is_string($content)) return null; // in case it was callable
+		$indented = 0;
+		$lines = explode("\n", $content);
+		foreach ($lines as $line) {
+			$trimmed = ltrim($line);
+			if (!empty($trimmed)) {
+				$indented = strlen($line) - strlen($trimmed);
+				break; // only going off the first (non-empty) line
+			}
+		}
+		if ($indented) {
+			foreach ($lines as $key => $line) {
+				if (strlen(trim(substr($line, 0, $indented))) == 0) {
+					$lines[$key] = substr($line, $indented);
+				}
+			}
+		}
+		$content = implode("\n", $lines);
+        
+		return $markdown->text($content);
     }
 
     /**
